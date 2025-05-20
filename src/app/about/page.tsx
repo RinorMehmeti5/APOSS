@@ -155,7 +155,7 @@ export default function AboutPage() {
           <motion.p className="text-lg text-white/90" variants={fadeIn}>
             We believe that restaurant technology should work for you, not the
             other way around. Every feature we build is designed with real
-            restaurant workflows in mind, informed by our team's extensive
+            restaurant workflows in mind, informed by our team is extensive
             experience in the hospitality industry.
           </motion.p>
         </div>
@@ -308,7 +308,7 @@ export default function AboutPage() {
               Customer Focus
             </h3>
             <p className="text-[var(--color-gray-600)]">
-              We listen intently to our customers' needs and prioritize features
+              We listen intently to our customers needs and prioritize features
               that create real value for their businesses.
             </p>
           </motion.div>
@@ -439,8 +439,8 @@ export default function AboutPage() {
           Join Our Growing Team
         </h3>
         <p className="text-[var(--color-gray-600)] mb-6 max-w-2xl mx-auto">
-          We're always looking for talented individuals who are passionate about
-          creating technology that makes a difference in the restaurant
+          We are always looking for talented individuals who are passionate
+          about creating technology that makes a difference in the restaurant
           industry.
         </p>
         <motion.a

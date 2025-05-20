@@ -141,7 +141,7 @@ export default function SolutionsPage() {
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
               Empower your staff with a lightning-fast, intuitive ordering
               system that reduces training time and eliminates errors. Our
-              customizable menu management tools adapt to your restaurant's
+              customizable menu management tools adapt to your restaurants
               unique needs, from simple cafés to complex fine dining
               establishments.
             </p>
@@ -318,8 +318,8 @@ export default function SolutionsPage() {
               Seamless Table & Floor Plan Management
             </h2>
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Optimize your restaurant's floor plan and table management with
-              our intuitive visual interface. Track table status in real-time,
+              Optimize your restaurants floor plan and table management with our
+              intuitive visual interface. Track table status in real-time,
               manage reservations, and maximize seating efficiency to increase
               turns and revenue.
             </p>
@@ -494,7 +494,7 @@ export default function SolutionsPage() {
               Real-time Reporting & Analytics
             </h2>
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Gain powerful insights into your restaurant's performance with our
+              Gain powerful insights into your restaurants performance with our
               comprehensive reporting and analytics tools. Make data-driven
               decisions with customizable dashboards that highlight key metrics
               and trends in real-time.

@@ -128,7 +128,7 @@ export default function ContactPage() {
         subject: "",
         message: "",
       });
-    } catch (error) {
+    } catch {
       // Simulate error handling
       setSubmitStatus({
         isSubmitting: false,
