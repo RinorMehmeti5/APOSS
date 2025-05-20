@@ -818,7 +818,7 @@ export default function SolutionsPage() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="/demo"
+                href="/download"
                 className="bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold py-3 px-6 rounded-lg shadow-md inline-block"
               >
                 Request a Demo

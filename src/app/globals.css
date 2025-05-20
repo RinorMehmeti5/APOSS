@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  /* Theme colors */
+  /* Theme colors - dynamically set by ThemeContext */
   --color-primary: #0055ff;
-  /* Main blue */
   --color-primary-light: #e6f0ff;
-  /* Light blue for backgrounds */
   --color-primary-dark: #0044cc;
-  /* Darker blue for hover states */
+
+  /* Keep these the same */
   --color-white: #ffffff;
   --color-black: #121212;
   --color-gray-100: #f8f9fa;

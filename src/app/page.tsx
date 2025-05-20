@@ -182,14 +182,14 @@ export default function Home() {
                 variants={fadeIn}
               >
                 <Link
-                  href="/features"
+                  href="#"
                   className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg shadow-md 
                           transition duration-300 ease-in-out transform hover:scale-105"
                 >
                   Explore Features
                 </Link>
                 <Link
-                  href="/demo"
+                  href="/download"
                   className="border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold py-3 px-6 rounded-lg 
                           transition duration-300 ease-in-out"
                 >
@@ -463,7 +463,7 @@ export default function Home() {
               }}
             >
               <Link
-                href="/demo"
+                href="/download"
                 className="bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-bold py-4 px-8 rounded-lg shadow-lg text-lg 
                           transition duration-300 ease-in-out"
               >

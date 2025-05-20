@@ -252,13 +252,14 @@ export default function DownloadPage() {
           {/* Download Button */}
           <div className="text-center">
             <motion.a
-              href={`/downloads/apos-${activeOs}-${versionInfo.version}.${
-                activeOs === "windows"
-                  ? "exe"
-                  : activeOs === "mac"
-                  ? "dmg"
-                  : "AppImage"
-              }`}
+              // href={`/downloads/apos-${activeOs}-${versionInfo.version}.${
+              //   activeOs === "windows"
+              //     ? "exe"
+              //     : activeOs === "mac"
+              //     ? "dmg"
+              //     : "AppImage"
+              // }`}
+              href="#"
               className="inline-flex items-center justify-center bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-4 px-8 rounded-lg shadow-md text-lg transition-colors duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
@@ -287,7 +288,7 @@ export default function DownloadPage() {
             >
               By downloading, you agree to our{" "}
               <Link
-                href="/terms-of-service"
+                href="#"
                 className="text-[var(--color-primary)] hover:underline"
               >
                 Terms of Service

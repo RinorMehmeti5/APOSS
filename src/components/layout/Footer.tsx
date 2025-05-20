@@ -46,13 +46,13 @@ const Footer: React.FC = () => {
         {/* Secondary Navigation */}
         <div className="text-sm space-x-6">
           <Link
-            href="/privacy-policy"
+            href="#"
             className="hover:text-blue-300 transition-colors duration-300"
           >
             Privacy Policy
           </Link>
           <Link
-            href="/terms-of-service"
+            href="#"
             className="hover:text-blue-300 transition-colors duration-300"
           >
             Terms of Service

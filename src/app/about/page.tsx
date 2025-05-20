@@ -446,7 +446,7 @@ export default function AboutPage() {
         <motion.a
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
-          href="/careers"
+          href="#"
           className="inline-block bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out"
         >
           View Open Positions
