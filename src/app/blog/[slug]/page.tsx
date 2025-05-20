@@ -1,10 +1,10 @@
 // File: src/app/blog/[slug]/page.tsx (Server Component)
 import { getPostBySlug, getAllPostSlugs } from "../../../../lib/posts-server";
 import { notFound } from "next/navigation";
-import BlogPostClient from "./BlogPostPage";
+import BlogPostClient from "./BlogPostClient";
 import type { Metadata } from "next";
 
-// For types only
+// Define params interface
 interface Params {
   slug: string;
 }
@@ -48,11 +48,17 @@ export async function generateMetadata({
 // Generate static paths for SSG
 export async function generateStaticParams() {
   const slugs = getAllPostSlugs();
-  return slugs.map(({ slug }) => ({ slug }));
+  return slugs.map((slug) => ({
+    slug: slug.slug,
+  }));
 }
 
-// Blog post page component
-export default async function BlogPostPage({ params }: { params: Params }) {
+// Blog post page component with proper Next.js App Router typing
+export default async function BlogPostPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   try {
     // Get the post data on the server
     const post = await getPostBySlug(params.slug);
