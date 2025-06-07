@@ -26,7 +26,7 @@ export async function generateMetadata({
     }
 
     return {
-      title: `${post.title} | APOS Restaurant Blog`,
+      title: `${post.title} | APOS Solutions Blog`,
       description: post.excerpt,
       openGraph: {
         title: post.title,
@@ -40,7 +40,7 @@ export async function generateMetadata({
     console.error("Error generating metadata:", error);
     return {
       title: "Blog Post",
-      description: "View this blog post on APOS Restaurant",
+      description: "View this blog post on APOS Solutions",
     };
   }
 }

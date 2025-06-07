@@ -75,6 +75,6 @@ While still in early adoption phases, restaurants implementing blockchain soluti
 
 As these technologies continue to mature, the most successful restaurants will be those that thoughtfully integrate them into their operations rather than chasing every new trend. The key is identifying which technologies address your specific business challenges and enhance the experience you want to create for your customers.
 
-At APOS Restaurant, we're constantly evaluating these trends to ensure our platform evolves alongside the industry, providing you with the tools you need to stay competitive in an increasingly tech-driven marketplace.
+At APOS Solutions, we're constantly evaluating these trends to ensure our platform evolves alongside the industry, providing you with the tools you need to stay competitive in an increasingly tech-driven marketplace.
 
 What technology trends are you most excited about implementing in your restaurant? Share your thoughts in the comments!

@@ -51,7 +51,7 @@ export default function BlogClient({ posts }: BlogClientProps) {
         transition={{ duration: 0.7, delay: 0.2 }}
       >
         Discover the latest trends, tips, and industry insights from the APOS
-        Restaurant team to help your business thrive.
+        Solutions team to help your business thrive.
       </motion.p>
 
       {/* Posts Grid */}

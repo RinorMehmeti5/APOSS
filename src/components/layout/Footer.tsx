@@ -40,19 +40,19 @@ const Footer: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         {/* Copyright */}
         <div className="text-sm">
-          © {currentYear} APOS Restaurant. All Rights Reserved.
+          © {currentYear} APOS Solutions. All Rights Reserved.
         </div>
 
         {/* Secondary Navigation */}
         <div className="text-sm space-x-6">
           <Link
-            href="#"
+            href="/privacy"
             className="hover:text-blue-300 transition-colors duration-300"
           >
             Privacy Policy
           </Link>
           <Link
-            href="#"
+            href="/terms"
             className="hover:text-blue-300 transition-colors duration-300"
           >
             Terms of Service

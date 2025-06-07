@@ -148,7 +148,7 @@ const Navbar: React.FC = () => {
             href="/"
             className="font-bold text-xl transition-colors duration-300 text-[var(--color-primary)]"
           >
-            APOS Restaurant
+            APOS Solutions
           </Link>
         </motion.div>
 

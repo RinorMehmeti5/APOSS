@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 
 export default function AboutPage() {
-  // Team members data
+  // Team members data (kept for future use)
   const teamMembers = [
     {
       id: 1,
@@ -30,7 +30,7 @@ export default function AboutPage() {
       id: 4,
       name: "David Rodriguez",
       title: "Lead Product Designer",
-      bio: "David combines his experience as a former chef with his design expertise to create interfaces that make sense in the fast-paced restaurant environment.",
+      bio: "David combines his experience as a former chef with his design expertise to create interfaces that make sense in the fast-paced environment.",
       imagePlaceholder: "DR",
     },
   ];
@@ -39,38 +39,45 @@ export default function AboutPage() {
   const milestones = [
     {
       id: 1,
-      year: "2019",
-      title: "The Beginning",
+      year: "Q1 2024",
+      title: "Recognizing the Market Gap",
       description:
-        "APOS Restaurant was founded after our team experienced firsthand the challenges of managing restaurants with outdated technology.",
+        "Identified growing frustration in hospitality and retail sectors with outdated, fragmented POS technologies. Began informal discussions with business owners and internal brainstorming sessions.",
     },
     {
       id: 2,
-      year: "2020",
-      title: "First Product Launch",
+      year: "Q2 2024",
+      title: "Market & Client Needs Analysis",
       description:
-        "We launched our MVP with a focus on intuitive order taking and basic reporting, quickly gaining our first 50 customers.",
+        "Conducted competitive analysis across DACH and Europe. Interviewed 50+ potential clients to understand challenges. Identified core needs: intuitive usability, modular architecture, and cross-industry compatibility.",
     },
     {
       id: 3,
-      year: "2021",
-      title: "Major Feature Expansion",
+      year: "Q3 2024",
+      title: "Concept Design & Solution Planning",
       description:
-        "Added kitchen display system, inventory management, and advanced analytics capabilities based on customer feedback.",
+        "Designed the APOS system blueprint as an ecosystem. Drafted core system structure, explored cloud-first integrations, and defined our value proposition: Efficiency, Flexibility, Transparency.",
     },
     {
       id: 4,
-      year: "2023",
-      title: "Global Expansion",
+      year: "Q4 2024",
+      title: "Prototype Development & Strategic Alignment",
       description:
-        "Expanded our services internationally, now supporting restaurants in over 15 countries with multi-language capabilities.",
+        "Developed first working prototype, ran closed feedback rounds with test clients, and began partnership talks with Sunmi (hardware) and Softpay (softPOS payment).",
     },
     {
       id: 5,
-      year: "2024",
-      title: "Cloud Platform Redesign",
+      year: "Apr 2025",
+      title: "Official Founding of APOS GmbH",
       description:
-        "Completely rebuilt our platform with next-generation technology to handle enterprise-scale operations while maintaining ease of use.",
+        "After over a year of research and testing, officially founded APOS GmbH. Established company registration, expanded core team, and finalized strategic partnerships.",
+    },
+    {
+      id: 6,
+      year: "Q2-Q3 2025",
+      title: "Product Launch & Market Entry",
+      description:
+        "Beginning active roll-out in CH with targeted industries. Continuing to refine user experience through real-world feedback while building partner network for rapid scaling.",
     },
   ];
 
@@ -142,8 +149,8 @@ export default function AboutPage() {
             className="text-xl md:text-2xl font-light leading-relaxed"
             variants={fadeIn}
           >
-            To empower restaurants of all sizes with technology that simplifies
-            operations, enhances guest experiences, and drives sustainable
+            To empower businesses of all sizes with technology that simplifies
+            operations, enhances customer experiences, and drives sustainable
             growth.
           </motion.p>
 
@@ -153,10 +160,10 @@ export default function AboutPage() {
           ></motion.div>
 
           <motion.p className="text-lg text-white/90" variants={fadeIn}>
-            We believe that restaurant technology should work for you, not the
-            other way around. Every feature we build is designed with real
-            restaurant workflows in mind, informed by our team is extensive
-            experience in the hospitality industry.
+            APOS GmbH is built around one belief: POS should serve the business
+            – not the other way around. We believe that powerful software can
+            also be easy to use, focusing on intuitive designs that require
+            minimal training.
           </motion.p>
         </div>
       </motion.div>
@@ -173,9 +180,9 @@ export default function AboutPage() {
           Our Journey
         </motion.h2>
 
-        <div className="relative max-w-3xl mx-auto">
+        <div className="relative max-w-4xl mx-auto">
           {/* Vertical Line */}
-          <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-0.5 bg-[var(--color-primary-light)] transform md:-translate-x-px"></div>
+          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-[var(--color-primary-light)] transform md:-translate-x-px"></div>
 
           {/* Timeline Items */}
           {milestones.map((milestone, index) => (
@@ -192,18 +199,23 @@ export default function AboutPage() {
                   index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
                 }`}
               >
-                {/* Year Marker */}
+                {/* Year Marker - Improved design */}
                 <div className="flex-none w-full md:w-1/2 flex items-center mb-4 md:mb-0">
                   <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className={`h-12 w-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center 
-                                text-lg font-bold z-10 shadow-md mr-4 md:mr-0 ${
-                                  index % 2 === 0
-                                    ? "md:ml-auto md:mr-0"
-                                    : "md:mr-auto md:ml-0"
-                                }`}
+                    whileHover={{ scale: 1.05 }}
+                    className={`relative ${
+                      index % 2 === 0
+                        ? "md:ml-auto md:mr-8"
+                        : "md:mr-auto md:ml-8"
+                    }`}
                   >
-                    {milestone.year}
+                    {/* Timeline dot */}
+                    <div className="absolute left-0 md:left-auto w-4 h-4 bg-[var(--color-primary)] rounded-full -translate-x-6 md:translate-x-0 top-1/2 -translate-y-1/2 md:hidden"></div>
+
+                    {/* Year badge */}
+                    <div className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg shadow-md font-bold text-sm ml-8 md:ml-0">
+                      {milestone.year}
+                    </div>
                   </motion.div>
                 </div>
 
@@ -211,7 +223,7 @@ export default function AboutPage() {
                 <div
                   className={`flex-none w-full md:w-1/2 ${
                     index % 2 === 0 ? "md:pl-8" : "md:pr-8"
-                  }`}
+                  } pl-8 md:pl-0`}
                 >
                   <motion.div
                     className="bg-white p-6 rounded-lg shadow-md border border-[var(--color-primary-light)]"
@@ -229,6 +241,38 @@ export default function AboutPage() {
               </div>
             </motion.div>
           ))}
+
+          {/* Future Vision - Special styling */}
+          <motion.div
+            className="relative mt-16 mb-8"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, delay: milestones.length * 0.1 }}
+          >
+            <div className="text-center">
+              <motion.div whileHover={{ scale: 1.05 }} className="inline-block">
+                <div className="bg-[var(--color-primary-dark)] text-white px-6 py-3 rounded-lg shadow-lg font-bold text-lg mb-6">
+                  The Future
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="bg-[var(--color-primary-light)] p-8 rounded-xl shadow-md border-2 border-[var(--color-primary)]"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-lg text-[var(--color-primary-dark)] font-medium italic">
+                  "POS should serve the business – not the other way around"
+                </p>
+                <p className="text-[var(--color-gray-600)] mt-4">
+                  APOS GmbH is built around one belief: Our mission is to become
+                  the new standard for intuitive, scalable and future-ready
+                  point-of-sale systems.
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -277,8 +321,8 @@ export default function AboutPage() {
               Innovation
             </h3>
             <p className="text-[var(--color-gray-600)]">
-              We constantly push the boundaries of what restaurant technology
-              can do, seeking new ways to solve industry challenges.
+              We constantly push the boundaries of what POS technology can do,
+              seeking new ways to solve industry challenges.
             </p>
           </motion.div>
 
@@ -339,7 +383,7 @@ export default function AboutPage() {
               Reliability
             </h3>
             <p className="text-[var(--color-gray-600)]">
-              We build software that restaurants can depend on every day, with
+              We build software that businesses can depend on every day, with
               uptime and stability as our top priorities.
             </p>
           </motion.div>
@@ -376,82 +420,6 @@ export default function AboutPage() {
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Meet the Team Section */}
-      <div className="mb-20">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center mb-12 text-[var(--color-primary-dark)]"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          Meet Our Leadership Team
-        </motion.h2>
-
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {teamMembers.map((member) => (
-            <motion.div
-              key={member.id}
-              variants={fadeIn}
-              whileHover={{ y: -10 }}
-              className="bg-white rounded-xl shadow-md overflow-hidden border border-[var(--color-primary-light)]"
-            >
-              {/* Member Photo Placeholder */}
-              <div className="h-48 bg-[var(--color-primary-light)] flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-2xl font-bold">
-                  {member.imagePlaceholder}
-                </div>
-              </div>
-
-              {/* Member Info */}
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-1 text-[var(--color-primary-dark)]">
-                  {member.name}
-                </h3>
-                <p className="text-[var(--color-primary)] mb-4">
-                  {member.title}
-                </p>
-                <p className="text-[var(--color-gray-600)] text-sm">
-                  {member.bio}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Join Our Team CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-        className="bg-[var(--color-primary-light)] rounded-xl p-8 md:p-12 text-center mb-20"
-      >
-        <h3 className="text-xl md:text-2xl font-bold mb-4 text-[var(--color-primary-dark)]">
-          Join Our Growing Team
-        </h3>
-        <p className="text-[var(--color-gray-600)] mb-6 max-w-2xl mx-auto">
-          We are always looking for talented individuals who are passionate
-          about creating technology that makes a difference in the restaurant
-          industry.
-        </p>
-        <motion.a
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-          href="#"
-          className="inline-block bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out"
-        >
-          View Open Positions
-        </motion.a>
-      </motion.div>
     </div>
   );
 }

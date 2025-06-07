@@ -18,8 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "APOS Restaurant",
-  description: "The Future of Restaurant Management",
+  title: "APOS Solutions",
+  description:
+    "All-Round Progressive Optimized Simple - The Future of POS Management",
 };
 
 export default function RootLayout({

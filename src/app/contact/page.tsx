@@ -109,9 +109,21 @@ export default function ContactPage() {
     });
 
     try {
-      // For demo purposes, just log the form data and simulate a delay
-      console.log("Form Data:", formData);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // THIS IS THE UPDATED PART
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      console.log("Response:", response);
+
+      if (!response.ok) {
+        // If the server response is not OK, throw an error to be caught by the catch block
+        throw new Error("Failed to send message.");
+      }
+      // END OF UPDATED PART
 
       // Simulate successful submission
       setSubmitStatus({
@@ -128,7 +140,8 @@ export default function ContactPage() {
         subject: "",
         message: "",
       });
-    } catch {
+    } catch (error) {
+      // The catch block now handles network or server errors
       // Simulate error handling
       setSubmitStatus({
         isSubmitting: false,
@@ -181,7 +194,7 @@ export default function ContactPage() {
         variants={itemVariants}
         className="text-lg text-center mb-12 max-w-xl mx-auto text-[var(--color-gray-600)]"
       >
-        Have questions about APOS Restaurant or need support? Fill out the form
+        Have questions about APOS Solutions or need support? Fill out the form
         below, and we ll get back to you as soon as possible.
       </motion.p>
 
@@ -253,7 +266,7 @@ export default function ContactPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full border ${
+                className={`w-full border text-[var(--color-gray-600)] ${
                   errors.name
                     ? "border-red-500"
                     : "border-[var(--color-gray-300)]"
@@ -279,7 +292,7 @@ export default function ContactPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full border ${
+                className={`w-full border text-[var(--color-gray-600)] ${
                   errors.email
                     ? "border-red-500"
                     : "border-[var(--color-gray-300)]"
@@ -305,7 +318,7 @@ export default function ContactPage() {
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                className={`w-full border ${
+                className={`w-full border text-[var(--color-gray-600)] ${
                   errors.subject
                     ? "border-red-500"
                     : "border-[var(--color-gray-300)]"
@@ -331,7 +344,7 @@ export default function ContactPage() {
                 value={formData.message}
                 onChange={handleChange}
                 rows={5}
-                className={`w-full border ${
+                className={`w-full border text-[var(--color-gray-600)] ${
                   errors.message
                     ? "border-red-500"
                     : "border-[var(--color-gray-300)]"
@@ -420,10 +433,10 @@ export default function ContactPage() {
                     For general inquiries and support
                   </p>
                   <a
-                    href="mailto:support@aposrestaurant.com"
+                    href="mailto:info@apos-kassen.ch"
                     className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
                   >
-                    support@aposrestaurant.com
+                    info@apos-kassen.ch
                   </a>
                 </div>
               </motion.div>
@@ -445,10 +458,10 @@ export default function ContactPage() {
                     Monday to Friday, 9am - 5pm ET
                   </p>
                   <a
-                    href="tel:+18001234567"
+                    href="tel:+41772250348"
                     className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
                   >
-                    +1 (800) 123-4567
+                    +41 77 225 03 48
                   </a>
                 </div>
               </motion.div>
@@ -470,9 +483,9 @@ export default function ContactPage() {
                     Our headquarters location
                   </p>
                   <address className="not-italic text-[var(--color-gray-600)]">
-                    123 Tech Plaza, Suite 400
+                    Balfrinstrasse 14
                     <br />
-                    San Francisco, CA 94103
+                    3930 Visp, Switzerland
                   </address>
                 </div>
               </motion.div>

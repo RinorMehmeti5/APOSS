@@ -123,7 +123,7 @@ export default function DownloadPage() {
         className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
         variants={itemVariants}
       >
-        Download APOS Restaurant
+        Download APOS Solutions
       </motion.h1>
 
       {/* Value Reinforcement */}
@@ -131,7 +131,7 @@ export default function DownloadPage() {
         className="text-lg text-[var(--color-gray-600)] text-center mb-12 max-w-2xl mx-auto"
         variants={itemVariants}
       >
-        Join thousands of restaurants streamlining their operations with our
+        Join thousands of businesses streamlining their operations with our
         powerful and intuitive POS system.
       </motion.p>
 
@@ -190,7 +190,7 @@ export default function DownloadPage() {
                 {activeOs === "windows" && <WindowsIcon />}
                 {activeOs === "mac" && <MacIcon />}
                 {activeOs === "linux" && <LinuxIcon />}
-                APOS for{" "}
+                APOS Solutions for{" "}
                 {activeOs === "windows"
                   ? "Windows"
                   : activeOs === "mac"
@@ -409,7 +409,7 @@ export default function DownloadPage() {
                 {activeOs === "windows" &&
                   "Follow the on-screen instructions to complete the installation."}
                 {activeOs === "mac" &&
-                  "Drag the APOS Restaurant icon to the Applications folder."}
+                  "Drag the APOS Solutions icon to the Applications folder."}
                 {activeOs === "linux" &&
                   "Double-click the AppImage to run the application."}
               </span>
@@ -425,8 +425,8 @@ export default function DownloadPage() {
                 4
               </span>
               <span className="text-[var(--color-gray-600)]">
-                Launch APOS Restaurant from your desktop shortcut or
-                applications folder and begin setup.
+                Launch APOS Solutions from your desktop shortcut or applications
+                folder and begin setup.
               </span>
             </motion.li>
           </motion.ol>

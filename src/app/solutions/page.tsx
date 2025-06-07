@@ -75,7 +75,7 @@ export default function SolutionsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        APOS Restaurant Solutions: Powering Your Success
+        APOS Solutions: Powering Your Success
       </motion.h1>
 
       {/* Introductory Paragraph */}
@@ -809,7 +809,7 @@ export default function SolutionsPage() {
       >
         <div className="text-center px-4 md:px-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to see APOS Restaurant in action?
+            Ready to see APOS Solutions in action?
           </h2>
           <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
             Experience how our solutions can transform your restaurant

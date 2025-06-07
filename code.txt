@@ -1,0 +1,4191 @@
+=== vercel.json ===
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "eslint": {
+          "ignoreDuringBuilds": true
+        },
+        "typescript": {
+          "ignoreBuildErrors": true
+        }
+      }
+    }
+  ]
+}
+
+=== tsconfig.json ===
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+=== package.json ===
+{
+  "name": "apos",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "framer-motion": "^12.12.1",
+    "gray-matter": "^4.0.3",
+    "next": "15.3.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
+=== next-config.js ===
+/** @type {import('next').NextConfig} */
+
+const nextConfig = {
+  // Disable ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // Disable TypeScript type checking during build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  // Any other config options you need
+};
+
+module.exports = nextConfig;
+
+
+=== src\app\globals.css ===
+
+@import "tailwindcss";
+
+:root {
+  /* Theme colors - dynamically set by ThemeContext */
+  --color-primary: #0055ff;
+  --color-primary-light: #e6f0ff;
+  --color-primary-dark: #0044cc;
+
+  /* Keep these the same */
+  --color-white: #ffffff;
+  --color-black: #121212;
+  --color-gray-100: #f8f9fa;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #dee2e6;
+  --color-gray-600: #6c757d;
+  --color-gray-800: #343a40;
+}
+
+@theme inline {
+  --color-background: var(--color-white);
+  --color-foreground: var(--color-black);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-black);
+    --color-foreground: var(--color-white);
+  }
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+
+=== src\app\layout.tsx ===
+
+// File: src/app/layout.tsx
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import GlobalLayout from "../components/layout/GlobalLayout";
+import { ThemeProvider } from "@/components/theme/ThemeContext";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
+import ScrollToTop from "@/components/ScrollToTop";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "APOS Restaurant",
+  description: "The Future of Restaurant Management",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ThemeProvider>
+          <GlobalLayout>{children}</GlobalLayout>
+          <ThemeSwitcher />
+          <ScrollToTop />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+
+=== src\app\page.tsx ===
+
+"use client";
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  FiCoffee,
+  FiHome,
+  FiPieChart,
+  FiClock,
+  FiCreditCard,
+  FiCloud,
+} from "react-icons/fi";
+
+// Feature data with icons
+const features = [
+  {
+    id: 1,
+    icon: FiCoffee,
+    title: "Intuitive Order Taking",
+    description:
+      "Speed up service with our easy-to-use interface, minimizing errors and improving staff efficiency. Designed with real restaurant workflows in mind.",
+  },
+  {
+    id: 2,
+    icon: FiHome,
+    title: "Seamless Table Management",
+    description:
+      "Visually manage your floor plan, track table status, and optimize seating to maximize turns. Drag and drop interface makes adjustments simple.",
+  },
+  {
+    id: 3,
+    icon: FiPieChart,
+    title: "Insightful Reporting",
+    description:
+      "Gain valuable insights into your sales, top-performing items, and staff performance with comprehensive, easy-to-understand reports and dashboards.",
+  },
+  {
+    id: 4,
+    icon: FiClock,
+    title: "Kitchen Display System Integration",
+    description:
+      "Streamline communication between front-of-house and kitchen staff for faster, more accurate order fulfillment and reduced wait times.",
+  },
+  {
+    id: 5,
+    icon: FiCreditCard,
+    title: "Flexible Payment Processing",
+    description:
+      "Accept all payment types including credit cards, mobile payments, and gift cards. Split checks, apply discounts, and manage tips with ease.",
+  },
+  {
+    id: 6,
+    icon: FiCloud,
+    title: "Cloud-Based Management",
+    description:
+      "Access your data from anywhere. Make menu changes, view reports, and monitor performance remotely through our secure cloud platform.",
+  },
+];
+
+// Testimonial data
+const testimonials = [
+  {
+    id: 1,
+    quote:
+      "APOS Restaurant has revolutionized how we manage orders. Our staff loves it, and our service speed has dramatically improved!",
+    name: "Maria Chen",
+    roleOrRestaurant: "Owner, The Gourmet Spot",
+    avatarPlaceholder: "MC",
+  },
+  {
+    id: 2,
+    quote:
+      "The reporting features are a game-changer. I finally have a clear understanding of my business performance at my fingertips.",
+    name: "David Miller",
+    roleOrRestaurant: "Manager, Brew & Bites Cafe",
+    avatarPlaceholder: "DM",
+  },
+  {
+    id: 3,
+    quote:
+      "Switching to APOS was seamless. The interface is incredibly intuitive, and the support team was fantastic.",
+    name: "Aisha Khan",
+    roleOrRestaurant: "Chef & Owner, Spice Village",
+    avatarPlaceholder: "AK",
+  },
+  {
+    id: 4,
+    quote:
+      "Since implementing APOS, we've seen a 30% reduction in order errors and our customers are noticing the improved service quality.",
+    name: "James Wilson",
+    roleOrRestaurant: "Operations Director, Urban Plate Group",
+    avatarPlaceholder: "JW",
+  },
+];
+
+// Animation variants
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+export default function Home() {
+  // State for testimonial slider
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] =
+    React.useState(0);
+
+  // Testimonial navigation functions
+  const goToNextTestimonial = () => {
+    setCurrentTestimonialIndex((prevIndex) =>
+      prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const goToPrevTestimonial = () => {
+    setCurrentTestimonialIndex((prevIndex) =>
+      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToTestimonial = (index: number) => {
+    setCurrentTestimonialIndex(index);
+  };
+
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+            {/* Text Content Column */}
+            <motion.div
+              className="w-full md:w-1/2"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.2,
+                  },
+                },
+              }}
+            >
+              {/* Animated Headline */}
+              <motion.h1
+                className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)]"
+                variants={fadeIn}
+              >
+                The Future of Restaurant Management, Today
+              </motion.h1>
+
+              {/* Animated Sub-headline */}
+              <motion.p
+                className="text-lg text-[var(--color-gray-600)] mt-4"
+                variants={fadeIn}
+              >
+                Our intuitive Point of Sale system streamlines your operations
+                from order taking to payment processing, freeing you up to focus
+                on what matters most – your guests and the culinary experience
+                you create.
+              </motion.p>
+
+              {/* Animated CTA Buttons */}
+              <motion.div
+                className="mt-8 flex flex-wrap gap-4"
+                variants={fadeIn}
+              >
+                <Link
+                  href="#"
+                  className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg shadow-md 
+                          transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Explore Features
+                </Link>
+                <Link
+                  href="/download"
+                  className="border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold py-3 px-6 rounded-lg 
+                          transition duration-300 ease-in-out"
+                >
+                  See Demo
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Visual Element Column */}
+            <motion.div
+              className="w-full md:w-1/2 h-64 md:h-96 bg-[var(--color-primary-light)] rounded-xl flex items-center justify-center 
+                       shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <p className="text-[var(--color-primary)] text-center px-4">
+                Visual Placeholder: Future home for an image, illustration, or
+                short video of the POS in actions
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Features Section */}
+      <section className="py-16 md:py-24 bg-[var(--color-primary-light)]">
+        <div className="container mx-auto px-4">
+          {/* Section Title */}
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16 text-[var(--color-primary-dark)]"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Everything Your Restaurant Needs to Thrive
+          </motion.h2>
+
+          {/* Feature Cards Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {features.map((feature) => (
+              <motion.div
+                key={feature.id}
+                className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] 
+                          hover:border-[var(--color-primary)] hover:shadow-xl"
+                variants={fadeIn}
+                whileHover={{ y: -5 }}
+              >
+                {/* Icon */}
+                <div className="w-12 h-12 bg-[var(--color-primary-light)] text-[var(--color-primary)] rounded-lg flex items-center justify-center mb-4 text-xl">
+                  <feature.icon size={24} />
+                </div>
+
+                {/* Feature Title */}
+                <h3 className="text-xl font-semibold mb-2 text-[var(--color-primary-dark)]">
+                  {feature.title}
+                </h3>
+
+                {/* Feature Description */}
+                <p className="text-[var(--color-gray-600)]">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Customer Testimonials Section */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="container mx-auto px-4">
+          {/* Section Title */}
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16 text-[var(--color-primary-dark)]"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Trusted by Restaurants Like Yours
+          </motion.h2>
+
+          {/* Testimonials Slider */}
+          <motion.div
+            className="relative mx-auto max-w-3xl"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            {/* Testimonial Slides Container */}
+            <div
+              className="overflow-hidden rounded-xl"
+              aria-live="polite"
+              aria-roledescription="carousel"
+            >
+              <motion.div
+                className="flex"
+                animate={{ x: `-${currentTestimonialIndex * 100}%` }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                {testimonials.map((testimonial) => (
+                  <div
+                    key={testimonial.id}
+                    className="w-full flex-shrink-0 px-4 py-8 md:py-12"
+                    aria-roledescription="slide"
+                  >
+                    <motion.div
+                      className="bg-[var(--color-primary-light)] rounded-xl p-6 md:p-8 shadow-md"
+                      whileHover={{ y: -5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {/* Quote Icon */}
+                      <div className="text-[var(--color-primary)] text-4xl mb-4">
+                        ☺
+                      </div>
+
+                      {/* Testimonial Text */}
+                      <p className="text-lg text-[var(--color-gray-800)] italic">
+                        {testimonial.quote}
+                      </p>
+
+                      {/* Customer Info */}
+                      <div className="mt-6 flex items-center">
+                        {/* Avatar Placeholder */}
+                        <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-sm mr-3">
+                          {testimonial.avatarPlaceholder}
+                        </div>
+
+                        <div>
+                          <p className="font-semibold text-[var(--color-primary-dark)]">
+                            {testimonial.name}
+                          </p>
+                          <p className="text-sm text-[var(--color-gray-600)]">
+                            {testimonial.roleOrRestaurant}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Navigation Arrows */}
+            <motion.button
+              type="button"
+              onClick={goToPrevTestimonial}
+              className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-4 md:-translate-x-8 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-[var(--color-primary-light)] transition-colors duration-300"
+              aria-label="Previous testimonial"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-[var(--color-primary)]"
+              >
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </motion.button>
+
+            <motion.button
+              type="button"
+              onClick={goToNextTestimonial}
+              className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-4 md:translate-x-8 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-[var(--color-primary-light)] transition-colors duration-300"
+              aria-label="Next testimonial"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-[var(--color-primary)]"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </motion.button>
+
+            {/* Dot Indicators */}
+            <div className="flex justify-center space-x-2 mt-8">
+              {testimonials.map((_, index) => (
+                <motion.button
+                  key={index}
+                  type="button"
+                  onClick={() => goToTestimonial(index)}
+                  className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 
+                    ${
+                      currentTestimonialIndex === index
+                        ? "bg-[var(--color-primary)]"
+                        : "bg-[var(--color-gray-300)] hover:bg-[var(--color-gray-400)]"
+                    }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                  aria-current={
+                    currentTestimonialIndex === index ? "true" : "false"
+                  }
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-16 md:py-24 bg-[var(--color-primary)] text-white">
+        <div className="container mx-auto px-4 text-center">
+          {/* CTA Headline */}
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Ready to Transform Your Restaurant Operations?
+          </motion.h2>
+
+          {/* Supporting Text */}
+          <motion.p
+            className="text-lg opacity-90 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Join hundreds of successful restaurants already thriving with APOS.
+            Start today and see the difference in your efficiency, customer
+            satisfaction, and bottom line.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {/* Primary CTA Button with Animation */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              animate={{ scale: [1, 1.03, 1] }}
+              transition={{
+                repeat: Infinity,
+                repeatType: "mirror",
+                duration: 2,
+              }}
+            >
+              <Link
+                href="/download"
+                className="bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-bold py-4 px-8 rounded-lg shadow-lg text-lg 
+                          transition duration-300 ease-in-out"
+              >
+                Request a Free Demo
+              </Link>
+            </motion.div>
+
+            {/* Secondary CTA Button */}
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/contact"
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[var(--color-primary)] 
+                          font-bold py-4 px-8 rounded-lg text-lg transition duration-300 ease-in-out"
+              >
+                Contact Sales
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Additional Trust Element */}
+          <motion.p
+            className="mt-8 text-sm opacity-90"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            No credit card required • Free 14-day trial • Cancel anytime
+          </motion.p>
+        </div>
+      </section>
+    </>
+  );
+}
+
+
+=== src\app\about\page.tsx ===
+
+"use client";
+import React from "react";
+import { motion } from "framer-motion";
+
+export default function AboutPage() {
+  // Team members data
+  const teamMembers = [
+    {
+      id: 1,
+      name: "Sarah Johnson",
+      title: "Founder & CEO",
+      bio: "Former restaurant manager with 15+ years of industry experience. Sarah founded APOS to solve the problems she faced daily in restaurant operations.",
+      imagePlaceholder: "SJ",
+    },
+    {
+      id: 2,
+      name: "Michael Chen",
+      title: "CTO",
+      bio: "Tech industry veteran with a passion for creating intuitive software solutions. Michael leads our development team with a focus on performance and reliability.",
+      imagePlaceholder: "MC",
+    },
+    {
+      id: 3,
+      name: "Aisha Patel",
+      title: "Head of Customer Success",
+      bio: "With a background in both hospitality and software support, Aisha ensures our clients get the most out of their APOS implementation.",
+      imagePlaceholder: "AP",
+    },
+    {
+      id: 4,
+      name: "David Rodriguez",
+      title: "Lead Product Designer",
+      bio: "David combines his experience as a former chef with his design expertise to create interfaces that make sense in the fast-paced restaurant environment.",
+      imagePlaceholder: "DR",
+    },
+  ];
+
+  // Timeline milestones data
+  const milestones = [
+    {
+      id: 1,
+      year: "2019",
+      title: "The Beginning",
+      description:
+        "APOS Restaurant was founded after our team experienced firsthand the challenges of managing restaurants with outdated technology.",
+    },
+    {
+      id: 2,
+      year: "2020",
+      title: "First Product Launch",
+      description:
+        "We launched our MVP with a focus on intuitive order taking and basic reporting, quickly gaining our first 50 customers.",
+    },
+    {
+      id: 3,
+      year: "2021",
+      title: "Major Feature Expansion",
+      description:
+        "Added kitchen display system, inventory management, and advanced analytics capabilities based on customer feedback.",
+    },
+    {
+      id: 4,
+      year: "2023",
+      title: "Global Expansion",
+      description:
+        "Expanded our services internationally, now supporting restaurants in over 15 countries with multi-language capabilities.",
+    },
+    {
+      id: 5,
+      year: "2024",
+      title: "Cloud Platform Redesign",
+      description:
+        "Completely rebuilt our platform with next-generation technology to handle enterprise-scale operations while maintaining ease of use.",
+    },
+  ];
+
+  // Animation variants
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: "easeOut" },
+    },
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: 0 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
+
+  return (
+    <div className="container mx-auto px-4 bg-white">
+      {/* Main Page Title */}
+      <motion.h1
+        className="text-3xl md:text-4xl font-bold text-center mt-16 mb-6 text-[var(--color-primary-dark)]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        Meet the Team Behind Your Success
+      </motion.h1>
+
+      {/* Mission & Vision Section */}
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={fadeIn}
+        className="relative py-20 md:py-32 mb-20 rounded-2xl overflow-hidden bg-[var(--color-primary)] text-white"
+      >
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-40 h-40 rounded-full bg-white translate-x-20 translate-y-10"></div>
+          <div className="absolute top-0 right-0 w-60 h-60 rounded-full bg-white -translate-x-20 translate-y-5"></div>
+          <div className="absolute bottom-0 left-1/3 w-40 h-40 rounded-full bg-white -translate-y-10"></div>
+        </div>
+
+        <div className="relative z-10 px-6 md:px-16 max-w-4xl mx-auto text-center">
+          <motion.h2
+            className="text-2xl md:text-3xl font-bold mb-6"
+            variants={fadeIn}
+          >
+            Our Mission
+          </motion.h2>
+          <motion.p
+            className="text-xl md:text-2xl font-light leading-relaxed"
+            variants={fadeIn}
+          >
+            To empower restaurants of all sizes with technology that simplifies
+            operations, enhances guest experiences, and drives sustainable
+            growth.
+          </motion.p>
+
+          <motion.div
+            className="w-20 h-1 bg-white mx-auto my-10"
+            variants={scaleIn}
+          ></motion.div>
+
+          <motion.p className="text-lg text-white/90" variants={fadeIn}>
+            We believe that restaurant technology should work for you, not the
+            other way around. Every feature we build is designed with real
+            restaurant workflows in mind, informed by our team is extensive
+            experience in the hospitality industry.
+          </motion.p>
+        </div>
+      </motion.div>
+
+      {/* Our Story Section - Timeline */}
+      <div className="mb-20">
+        <motion.h2
+          className="text-2xl md:text-3xl font-bold text-center mb-12 text-[var(--color-primary-dark)]"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          Our Journey
+        </motion.h2>
+
+        <div className="relative max-w-3xl mx-auto">
+          {/* Vertical Line */}
+          <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-0.5 bg-[var(--color-primary-light)] transform md:-translate-x-px"></div>
+
+          {/* Timeline Items */}
+          {milestones.map((milestone, index) => (
+            <motion.div
+              key={milestone.id}
+              className="relative mb-12 md:mb-16"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7, delay: index * 0.1 }}
+            >
+              <div
+                className={`flex flex-col ${
+                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                }`}
+              >
+                {/* Year Marker */}
+                <div className="flex-none w-full md:w-1/2 flex items-center mb-4 md:mb-0">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className={`h-12 w-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center 
+                                text-lg font-bold z-10 shadow-md mr-4 md:mr-0 ${
+                                  index % 2 === 0
+                                    ? "md:ml-auto md:mr-0"
+                                    : "md:mr-auto md:ml-0"
+                                }`}
+                  >
+                    {milestone.year}
+                  </motion.div>
+                </div>
+
+                {/* Timeline Content */}
+                <div
+                  className={`flex-none w-full md:w-1/2 ${
+                    index % 2 === 0 ? "md:pl-8" : "md:pr-8"
+                  }`}
+                >
+                  <motion.div
+                    className="bg-white p-6 rounded-lg shadow-md border border-[var(--color-primary-light)]"
+                    whileHover={{ y: -5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h3 className="text-xl font-semibold mb-2 text-[var(--color-primary)]">
+                      {milestone.title}
+                    </h3>
+                    <p className="text-[var(--color-gray-600)]">
+                      {milestone.description}
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Our Values Section */}
+      <div className="mb-20">
+        <motion.h2
+          className="text-2xl md:text-3xl font-bold text-center mb-12 text-[var(--color-primary-dark)]"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          Our Core Values
+        </motion.h2>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {/* Value 1 */}
+          <motion.div
+            variants={fadeIn}
+            whileHover={{ y: -8 }}
+            className="bg-white p-8 rounded-xl shadow-md border border-[var(--color-primary-light)]"
+          >
+            <div className="w-16 h-16 bg-[var(--color-primary-light)] rounded-full flex items-center justify-center mb-6 text-[var(--color-primary)]">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-[var(--color-primary-dark)]">
+              Innovation
+            </h3>
+            <p className="text-[var(--color-gray-600)]">
+              We constantly push the boundaries of what restaurant technology
+              can do, seeking new ways to solve industry challenges.
+            </p>
+          </motion.div>
+
+          {/* Value 2 */}
+          <motion.div
+            variants={fadeIn}
+            whileHover={{ y: -8 }}
+            className="bg-white p-8 rounded-xl shadow-md border border-[var(--color-primary-light)]"
+          >
+            <div className="w-16 h-16 bg-[var(--color-primary-light)] rounded-full flex items-center justify-center mb-6 text-[var(--color-primary)]">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-[var(--color-primary-dark)]">
+              Customer Focus
+            </h3>
+            <p className="text-[var(--color-gray-600)]">
+              We listen intently to our customers needs and prioritize features
+              that create real value for their businesses.
+            </p>
+          </motion.div>
+
+          {/* Value 3 */}
+          <motion.div
+            variants={fadeIn}
+            whileHover={{ y: -8 }}
+            className="bg-white p-8 rounded-xl shadow-md border border-[var(--color-primary-light)]"
+          >
+            <div className="w-16 h-16 bg-[var(--color-primary-light)] rounded-full flex items-center justify-center mb-6 text-[var(--color-primary)]">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-[var(--color-primary-dark)]">
+              Reliability
+            </h3>
+            <p className="text-[var(--color-gray-600)]">
+              We build software that restaurants can depend on every day, with
+              uptime and stability as our top priorities.
+            </p>
+          </motion.div>
+
+          {/* Value 4 */}
+          <motion.div
+            variants={fadeIn}
+            whileHover={{ y: -8 }}
+            className="bg-white p-8 rounded-xl shadow-md border border-[var(--color-primary-light)]"
+          >
+            <div className="w-16 h-16 bg-[var(--color-primary-light)] rounded-full flex items-center justify-center mb-6 text-[var(--color-primary)]">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 text-[var(--color-primary-dark)]">
+              Simplicity
+            </h3>
+            <p className="text-[var(--color-gray-600)]">
+              We believe powerful software can also be easy to use. We focus on
+              intuitive designs that require minimal training.
+            </p>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Meet the Team Section */}
+      <div className="mb-20">
+        <motion.h2
+          className="text-2xl md:text-3xl font-bold text-center mb-12 text-[var(--color-primary-dark)]"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          Meet Our Leadership Team
+        </motion.h2>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {teamMembers.map((member) => (
+            <motion.div
+              key={member.id}
+              variants={fadeIn}
+              whileHover={{ y: -10 }}
+              className="bg-white rounded-xl shadow-md overflow-hidden border border-[var(--color-primary-light)]"
+            >
+              {/* Member Photo Placeholder */}
+              <div className="h-48 bg-[var(--color-primary-light)] flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-2xl font-bold">
+                  {member.imagePlaceholder}
+                </div>
+              </div>
+
+              {/* Member Info */}
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-1 text-[var(--color-primary-dark)]">
+                  {member.name}
+                </h3>
+                <p className="text-[var(--color-primary)] mb-4">
+                  {member.title}
+                </p>
+                <p className="text-[var(--color-gray-600)] text-sm">
+                  {member.bio}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Join Our Team CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+        className="bg-[var(--color-primary-light)] rounded-xl p-8 md:p-12 text-center mb-20"
+      >
+        <h3 className="text-xl md:text-2xl font-bold mb-4 text-[var(--color-primary-dark)]">
+          Join Our Growing Team
+        </h3>
+        <p className="text-[var(--color-gray-600)] mb-6 max-w-2xl mx-auto">
+          We are always looking for talented individuals who are passionate
+          about creating technology that makes a difference in the restaurant
+          industry.
+        </p>
+        <motion.a
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+          href="#"
+          className="inline-block bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out"
+        >
+          View Open Positions
+        </motion.a>
+      </motion.div>
+    </div>
+  );
+}
+
+
+=== src\app\blog\BlogClient.tsx ===
+
+"use client";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { formatDate } from "../../../lib/posts-utils";
+import type { PostMetadata } from "../../../lib/posts-utils";
+
+// Define the props for the client component
+interface BlogClientProps {
+  posts: PostMetadata[];
+}
+
+export default function BlogClient({ posts }: BlogClientProps) {
+  // Animation variants
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-16 md:py-24 bg-white">
+      {/* Page Title */}
+      <motion.h1
+        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        Latest Articles & Insights
+      </motion.h1>
+
+      {/* Introduction */}
+      <motion.p
+        className="text-lg text-[var(--color-gray-600)] text-center mb-12 md:mb-16 max-w-2xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+      >
+        Discover the latest trends, tips, and industry insights from the APOS
+        Restaurant team to help your business thrive.
+      </motion.p>
+
+      {/* Posts Grid */}
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        {posts.map((post) => (
+          <motion.article
+            key={post.slug}
+            variants={cardVariants}
+            whileHover={{ y: -10, transition: { duration: 0.3 } }}
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full border border-[var(--color-primary-light)]"
+          >
+            {/* Featured Image */}
+            <div className="relative h-48 w-full overflow-hidden">
+              <div className="absolute inset-0 bg-[var(--color-primary-light)] flex items-center justify-center text-[var(--color-primary)]">
+                {/* This is a placeholder. In a real implementation, you would use the Image component with the actual image */}
+                <p className="text-center p-4">Featured Image Placeholder</p>
+                {/* Uncomment when you have actual images:
+                <Image
+                  src={post.featuredImage}
+                  alt={post.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                  priority={index < 6}
+                />
+                */}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 flex-grow flex flex-col">
+              {/* Date */}
+              <p className="text-sm text-[var(--color-primary)] mb-2">
+                {formatDate(post.date)}
+              </p>
+
+              {/* Title */}
+              <h2 className="text-xl font-bold mb-3 text-[var(--color-primary-dark)] hover:text-[var(--color-primary)] transition-colors duration-200">
+                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+              </h2>
+
+              {/* Excerpt */}
+              <p className="text-[var(--color-gray-600)] mb-4 flex-grow">
+                {post.excerpt}
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center mt-auto">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center font-bold text-sm mr-3">
+                  {post.author.charAt(0)}
+                </div>
+                <span className="text-sm text-[var(--color-gray-600)]">
+                  {post.author}
+                </span>
+              </div>
+
+              {/* Read More Link */}
+              <div className="mt-4 pt-4 border-t border-[var(--color-primary-light)]">
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="inline-flex items-center text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
+                  >
+                    Read More
+                    <svg
+                      className="w-4 h-4 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
+          </motion.article>
+        ))}
+      </motion.div>
+
+      {/* No Posts Message (shown if there are no posts) */}
+      {posts.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7 }}
+          className="text-center py-12 bg-[var(--color-primary-light)] rounded-lg"
+        >
+          <p className="text-lg text-[var(--color-gray-600)]">
+            No blog posts available yet. Check back soon for new content!
+          </p>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+
+=== src\app\blog\page.tsx ===
+
+// File: src/app/blog/page.tsx (Server Component)
+import { getAllPosts } from "../../../lib/posts-server";
+import BlogClient from "./BlogClient";
+
+export default function BlogPage() {
+  // Get all posts on the server
+  const posts = getAllPosts();
+
+  // Pass them to client component
+  return <BlogClient posts={posts} />;
+}
+
+
+=== src\app\blog\[slug]\BlogPostClient.tsx ===
+
+"use client";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { formatDate } from "../../../../lib/posts-utils";
+import ReactMarkdown from "react-markdown";
+import type { PostData } from "../../../../lib/posts-utils";
+
+// Define the props interface
+interface BlogPostClientProps {
+  post: PostData;
+}
+
+export default function BlogPostClient({ post }: BlogPostClientProps) {
+  // Animation variants
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-16 md:py-24 bg-white">
+      {/* Back to Blog Link */}
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div
+          whileHover={{ x: -5 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <Link
+            href="/blog"
+            className="inline-flex items-center text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors duration-200"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to All Articles
+          </Link>
+        </motion.div>
+      </motion.div>
+
+      <motion.article
+        className="max-w-3xl mx-auto"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.2,
+            },
+          },
+        }}
+      >
+        {/* Post Title */}
+        <motion.h1
+          className="text-3xl md:text-4xl font-bold mb-4 text-[var(--color-primary-dark)]"
+          variants={fadeIn}
+        >
+          {post.title}
+        </motion.h1>
+
+        {/* Post Metadata */}
+        <motion.div
+          className="flex items-center text-[var(--color-gray-600)] mb-8"
+          variants={fadeIn}
+        >
+          <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center font-bold text-sm mr-3">
+            {post.author.charAt(0)}
+          </div>
+          <span className="mr-4">{post.author}</span>
+          <span className="text-sm">{formatDate(post.date)}</span>
+        </motion.div>
+
+        {/* Featured Image */}
+        <motion.div
+          className="relative w-full h-64 md:h-96 mb-10 bg-[var(--color-primary-light)] rounded-lg overflow-hidden"
+          variants={fadeIn}
+        >
+          <div className="absolute inset-0 flex items-center justify-center text-[var(--color-primary)]">
+            {/* This is a placeholder. In a real implementation, you would use the Image component with the actual image */}
+            <p className="text-center p-4">Featured Image Placeholder</p>
+            {/* Uncomment when you have actual images:
+              <Image
+                src={post.featuredImage}
+                alt={post.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 800px"
+                className="object-cover"
+                priority
+              />
+              */}
+          </div>
+        </motion.div>
+
+        {/* Post Content - with Tailwind CSS v4 typography classes */}
+        <motion.div
+          className="prose prose-lg prose-blue max-w-none mb-10 text-gray-800"
+          variants={fadeIn}
+        >
+          <ReactMarkdown>{post.content}</ReactMarkdown>
+        </motion.div>
+
+        {/* Post Footer */}
+        <motion.div
+          className="pt-8 mt-8 border-t border-[var(--color-primary-light)]"
+          variants={fadeIn}
+        >
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <span className="text-sm text-[var(--color-gray-600)]">
+                Published on {formatDate(post.date)}
+              </span>
+            </div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/blog"
+                className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
+              >
+                Read More Articles
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.article>
+    </div>
+  );
+}
+
+
+=== src\app\blog\[slug]\not-found.tsx ===
+
+// File: src/app/blog/[slug]/not-found.tsx
+import Link from "next/link";
+
+export default function NotFound() {
+  return (
+    <div className="container mx-auto px-4 py-16 md:py-24 bg-white">
+      <div className="max-w-3xl mx-auto text-center">
+        <h1 className="text-3xl md:text-4xl font-bold mb-6 text-[var(--color-primary-dark)]">
+          Blog Post Not Found
+        </h1>
+        <p className="text-lg text-[var(--color-gray-600)] mb-8">
+          The blog post you re looking for doesn t exist or has been moved.
+        </p>
+        <Link
+          href="/blog"
+          className="inline-flex items-center bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+        >
+          Return to Blog
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+
+=== src\app\blog\[slug]\page.tsx ===
+
+// File: src/app/blog/[slug]/page.tsx (Server Component)
+import { getPostBySlug, getAllPostSlugs } from "../../../../lib/posts-server";
+import { notFound } from "next/navigation";
+import BlogPostClient from "./BlogPostClient";
+import type { Metadata } from "next";
+
+// Define params interface
+interface Params {
+  slug: string;
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  try {
+    const post = await getPostBySlug(params.slug);
+
+    if (!post) {
+      return {
+        title: "Post Not Found",
+        description: "This blog post could not be found.",
+      };
+    }
+
+    return {
+      title: `${post.title} | APOS Restaurant Blog`,
+      description: post.excerpt,
+      openGraph: {
+        title: post.title,
+        description: post.excerpt,
+        type: "article",
+        publishedTime: post.date,
+        authors: [post.author],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "Blog Post",
+      description: "View this blog post on APOS Restaurant",
+    };
+  }
+}
+
+// Generate static paths for SSG
+export async function generateStaticParams() {
+  const slugs = getAllPostSlugs();
+  return slugs.map((slug) => ({
+    slug: slug.slug,
+  }));
+}
+
+// Blog post page component with proper Next.js App Router typing
+export default async function BlogPostPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  try {
+    // Get the post data on the server
+    const post = await getPostBySlug(params.slug);
+
+    // Handle not found case
+    if (!post) {
+      notFound();
+    }
+
+    // Pass the post data to the client component
+    return <BlogPostClient post={post} />;
+  } catch (error) {
+    console.error("Error rendering blog post:", error);
+    notFound();
+  }
+}
+
+
+=== src\app\contact\page.tsx ===
+
+"use client";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiSend,
+  FiCheckCircle,
+  FiAlertCircle,
+} from "react-icons/fi";
+
+export default function ContactPage() {
+  // Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  // Validation errors state
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  // Form submission status state
+  const [submitStatus, setSubmitStatus] = useState({
+    isSubmitting: false,
+    isSubmitted: false,
+    isError: false,
+    message: "",
+  });
+
+  // Handle form input changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    // Clear error for this field when user starts typing
+    if (errors[name as keyof typeof errors]) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "",
+      }));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Please enter your name";
+      isValid = false;
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Please enter your email address";
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
+    }
+
+    // Subject validation
+    if (!formData.subject.trim()) {
+      newErrors.subject = "Please enter a subject";
+      isValid = false;
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      newErrors.message = "Please enter your message";
+      isValid = false;
+    } else if (formData.message.trim().length < 20) {
+      newErrors.message = "Message should be at least 20 characters";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setSubmitStatus({
+      isSubmitting: true,
+      isSubmitted: false,
+      isError: false,
+      message: "",
+    });
+
+    try {
+      // For demo purposes, just log the form data and simulate a delay
+      console.log("Form Data:", formData);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Simulate successful submission
+      setSubmitStatus({
+        isSubmitting: false,
+        isSubmitted: true,
+        isError: false,
+        message: "Thank you! Your message has been sent.",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch {
+      // Simulate error handling
+      setSubmitStatus({
+        isSubmitting: false,
+        isSubmitted: false,
+        isError: true,
+        message: "An error occurred. Please try again later.",
+      });
+    }
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="container mx-auto px-4 py-16 md:py-24 bg-white"
+    >
+      {/* Page Header */}
+      <motion.h1
+        variants={itemVariants}
+        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
+      >
+        Get In Touch
+      </motion.h1>
+
+      {/* Introductory Text */}
+      <motion.p
+        variants={itemVariants}
+        className="text-lg text-center mb-12 max-w-xl mx-auto text-[var(--color-gray-600)]"
+      >
+        Have questions about APOS Restaurant or need support? Fill out the form
+        below, and we ll get back to you as soon as possible.
+      </motion.p>
+
+      {/* Main Content Area - Side by Side on Desktop, Stacked on Mobile */}
+      <motion.div
+        variants={containerVariants}
+        className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12"
+      >
+        {/* Contact Form Section */}
+        <motion.div
+          variants={itemVariants}
+          className="flex-1 bg-white rounded-2xl shadow-md overflow-hidden p-8 border border-[var(--color-primary-light)]"
+        >
+          <h2 className="text-2xl font-semibold mb-6 text-[var(--color-primary-dark)]">
+            Send Us a Message
+          </h2>
+
+          {/* Success Message */}
+          {submitStatus.isSubmitted && !submitStatus.isError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 bg-[var(--color-primary-light)] border-l-4 border-[var(--color-primary)] p-4 rounded"
+            >
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <FiCheckCircle className="h-5 w-5 text-[var(--color-primary)]" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-[var(--color-primary-dark)]">
+                    {submitStatus.message}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Error Message */}
+          {submitStatus.isError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded"
+            >
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <FiAlertCircle className="h-5 w-5 text-red-500" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{submitStatus.message}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Contact Form */}
+          <form onSubmit={handleSubmit}>
+            {/* Name Field */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
+              >
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className={`w-full border ${
+                  errors.name
+                    ? "border-red-500"
+                    : "border-[var(--color-gray-300)]"
+                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
+                placeholder="John Doe"
+              />
+              {errors.name && (
+                <p className="text-red-600 text-sm mt-1">{errors.name}</p>
+              )}
+            </motion.div>
+
+            {/* Email Field */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
+              >
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full border ${
+                  errors.email
+                    ? "border-red-500"
+                    : "border-[var(--color-gray-300)]"
+                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
+                placeholder="john.doe@example.com"
+              />
+              {errors.email && (
+                <p className="text-red-600 text-sm mt-1">{errors.email}</p>
+              )}
+            </motion.div>
+
+            {/* Subject Field */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <label
+                htmlFor="subject"
+                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
+              >
+                Subject <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                className={`w-full border ${
+                  errors.subject
+                    ? "border-red-500"
+                    : "border-[var(--color-gray-300)]"
+                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
+                placeholder="Product Inquiry"
+              />
+              {errors.subject && (
+                <p className="text-red-600 text-sm mt-1">{errors.subject}</p>
+              )}
+            </motion.div>
+
+            {/* Message Field */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
+              >
+                Message <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                rows={5}
+                className={`w-full border ${
+                  errors.message
+                    ? "border-red-500"
+                    : "border-[var(--color-gray-300)]"
+                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
+                placeholder="Your message here..."
+              ></textarea>
+              {errors.message && (
+                <p className="text-red-600 text-sm mt-1">{errors.message}</p>
+              )}
+            </motion.div>
+
+            {/* Submit Button */}
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <button
+                type="submit"
+                disabled={submitStatus.isSubmitting}
+                className={`w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg 
+                          shadow-md transition duration-300 ease-in-out
+                          ${
+                            submitStatus.isSubmitting
+                              ? "opacity-70 cursor-not-allowed"
+                              : ""
+                          }`}
+              >
+                {submitStatus.isSubmitting ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Sending...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    <FiSend className="mr-2" />
+                    Send Message
+                  </span>
+                )}
+              </button>
+            </motion.div>
+          </form>
+        </motion.div>
+
+        {/* Contact Information Section */}
+        <motion.div variants={itemVariants} className="lg:w-96 space-y-8">
+          <div className="bg-[var(--color-primary-light)] p-8 rounded-2xl">
+            <h2 className="text-2xl font-semibold mb-6 text-[var(--color-primary-dark)]">
+              Contact Information
+            </h2>
+
+            <div className="space-y-8">
+              {/* Email Contact */}
+              <motion.div
+                className="flex items-start"
+                whileHover={{ x: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-4 text-white">
+                  <FiMail size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[var(--color-primary-dark)] mb-1">
+                    Email Us
+                  </h3>
+                  <p className="text-[var(--color-gray-600)] mb-1">
+                    For general inquiries and support
+                  </p>
+                  <a
+                    href="mailto:support@aposrestaurant.com"
+                    className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
+                  >
+                    support@aposrestaurant.com
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* Phone Contact */}
+              <motion.div
+                className="flex items-start"
+                whileHover={{ x: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-4 text-white">
+                  <FiPhone size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[var(--color-primary-dark)] mb-1">
+                    Call Us
+                  </h3>
+                  <p className="text-[var(--color-gray-600)] mb-1">
+                    Monday to Friday, 9am - 5pm ET
+                  </p>
+                  <a
+                    href="tel:+18001234567"
+                    className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
+                  >
+                    +1 (800) 123-4567
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* Visit Us */}
+              <motion.div
+                className="flex items-start"
+                whileHover={{ x: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-4 text-white">
+                  <FiMapPin size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[var(--color-primary-dark)] mb-1">
+                    Visit Us
+                  </h3>
+                  <p className="text-[var(--color-gray-600)] mb-1">
+                    Our headquarters location
+                  </p>
+                  <address className="not-italic text-[var(--color-gray-600)]">
+                    123 Tech Plaza, Suite 400
+                    <br />
+                    San Francisco, CA 94103
+                  </address>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Business Hours */}
+          <div className="bg-white p-8 rounded-2xl shadow-md border border-[var(--color-primary-light)]">
+            <h3 className="text-xl font-semibold mb-4 text-[var(--color-primary-dark)]">
+              Business Hours
+            </h3>
+            <ul className="space-y-2">
+              <li className="flex justify-between">
+                <span className="text-[var(--color-gray-600)]">
+                  Monday - Friday:
+                </span>
+                <span className="font-medium text-[var(--color-primary-dark)]">
+                  9:00 AM - 5:00 PM
+                </span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-[var(--color-gray-600)]">Saturday:</span>
+                <span className="font-medium text-[var(--color-primary-dark)]">
+                  10:00 AM - 2:00 PM
+                </span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-[var(--color-gray-600)]">Sunday:</span>
+                <span className="font-medium text-[var(--color-primary-dark)]">
+                  Closed
+                </span>
+              </li>
+            </ul>
+          </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+
+=== src\app\download\page.tsx ===
+
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+
+export default function DownloadPage() {
+  const [activeOs, setActiveOs] = useState<"windows" | "mac" | "linux">(
+    "windows"
+  );
+
+  // Version information
+  const versionInfo = {
+    version: "1.2.0",
+    releaseDate: "May 15, 2025",
+    size: {
+      windows: "78 MB",
+      mac: "82 MB",
+      linux: "74 MB",
+    },
+  };
+
+  // System requirements
+  const systemRequirements = {
+    windows: [
+      "Windows 10 or higher",
+      "4GB RAM minimum (8GB recommended)",
+      "200MB free disk space",
+      "1280 x 768 screen resolution or higher",
+    ],
+    mac: [
+      "macOS 11 (Big Sur) or higher",
+      "4GB RAM minimum (8GB recommended)",
+      "250MB free disk space",
+      "1280 x 768 screen resolution or higher",
+    ],
+    linux: [
+      "Ubuntu 20.04 LTS or equivalent",
+      "4GB RAM minimum (8GB recommended)",
+      "200MB free disk space",
+      "1280 x 768 screen resolution or higher",
+    ],
+  };
+
+  // OS Icons
+  const WindowsIcon = () => (
+    <svg
+      className="w-6 h-6 mr-2"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801" />
+    </svg>
+  );
+
+  const MacIcon = () => (
+    <svg
+      className="w-6 h-6 mr-2"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    </svg>
+  );
+
+  const LinuxIcon = () => (
+    <svg
+      className="w-6 h-6 mr-2"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489.117.779.567 1.54 1.182 1.959.267.18.575.309.958.339.493.038.97-.012 1.372-.283.402-.271.696-.737.834-1.45.068-.363.087-.773.058-1.202-.132.003-.262 0-.397-.003-1.04-.006-1.137.623-1.33.787-.605.513-1.092.123-1.17-.57-.063-.697.23-1.577.572-2.342.347-.772.8-1.496 1.295-2.171.657-.89 1.387-1.733 2.028-2.292.645-.559 1.2-.824 1.528-.955.325-.13.562-.277.862-.372.302-.096.607-.036.78.097.184.12.324.32.424.553.104.23.186.577.26.923.076.346.144.715.183.95.043.253.148.578.288.677.14.099.387.056.568-.18.182-.237.256-.603.273-.96.016-.357-.022-.865-.243-1.239-.22-.375-.586-.726-1.095-.912-.5-.103-1.046-.097-1.564.01-.524.111-.983.319-1.423.573-.428.247-.808.552-1.173.916-.371.378-.696.773-.93 1.233-.258.372-.45.85-.65 1.187-.202.337-.388.663-.513.95a6.526 6.526 0 00-.338.852c-.092.288-.153.554-.202.805v.001c-.204 1.126-.202 1.908-.08 2.634.12.725.305 1.335.66 1.887.71 1.105 1.855 1.764 3.225 1.97.68.103 1.438.112 2.213.01.57-.078 1.017-.29 1.367-.706.347-.409.566-.917.6-1.477.032-.57-.097-1.197-.37-1.803-.783-1.73-2.366-2.327-4.54-2.341m6.505 7.36c-.325.26-.69.437-1.07.612-.392.174-.804.264-1.178.384-.375.12-.702.245-.963.38-.262.13-.457.272-.568.422-.224.266-.327.51-.366.76-.04.25-.008.486.046.705a2.81 2.81 0 00.196.53c.074.156.166.318.306.485.126.133.312.235.54.287.229.051.464.054.713.005.239-.046.47-.139.673-.263.214-.133.434-.289.619-.478a6.056 6.056 0 00.704-.81c.126-.188.222-.408.293-.628.071-.22.124-.448.158-.68.037-.287.06-.558.068-.812.008-.255.002-.495-.01-.713-.013-.218-.024-.358-.037-.432-.006-.036-.025-.155-.063-.274a3.24 3.24 0 00-.123-.333 2.21 2.21 0 00-.213-.385c-.096-.144-.205-.26-.325-.353zm-10.91.058v.002c-.407.095-.739.244-1.011.466-.272.222-.487.52-.66.893-.347.742-.273 1.68.238 2.493.319.5.76.876 1.272 1.096.512.222 1.09.284 1.677.232.586-.051 1.236-.238 1.663-.546.433-.31.784-.742.933-1.262.076-.262.109-.564.108-.873 0-.31-.033-.612-.138-.908-.104-.296-.263-.548-.485-.729-.222-.18-.486-.277-.767-.302-.281-.025-.57.009-.832.113-.26.103-.444.25-.628.361-.183.11-.344.174-.5.212-.157.037-.325.043-.488.024-.162-.019-.295-.065-.388-.148-.093-.083-.166-.215-.212-.451-.07-.371.088-.732.329-1.021.24-.29.555-.525.855-.691.074-.04.315-.15.315-.15v-.003c.263-.125.497-.254.73-.368.233-.114.472-.237.701-.399.229-.162.456-.356.648-.596.194-.24.35-.527.395-.846.063-.478-.085-.942-.384-1.278-.3-.337-.74-.552-1.254-.614-.515-.062-1.08.002-1.578.158-.498.156-.933.39-1.281.686-.174.148-.328.315-.455.488-.128.173-.234.35-.318.526a3.56 3.56 0 00-.219.503c-.062.171-.104.339-.126.504-.022.168-.026.33-.016.492.011.161.027.305.065.426.034.127.091.219.17.286.08.065.176.113.302.115.125.002.24-.009.337-.022.097-.013.19-.04.301-.092.11-.051.194-.095.302-.152.108-.055.225-.128.359-.221.134-.093.285-.191.44-.296.156-.106.329-.214.51-.326a2.78 2.78 0 01.57-.266c.183-.064.343-.099.512-.097.169.002.299.021.416.069.117.047.224.109.307.187.083.079.114.152.148.27.033.117.017.267-.027.4l-.002-.001c-.055.134-.153.253-.278.366-.127.112-.278.206-.442.29-.164.085-.378.168-.55.241-.171.073-.403.148-.572.224a7.24 7.24 0 00-.57.266c-.2.108-.384.226-.529.355zm6.878-7.153c-.063-.19-.14-.366-.246-.531a2.11 2.11 0 00-.456-.528 1.57 1.57 0 00-.71-.345c-.29-.061-.61-.039-.91.041-.3.081-.531.215-.747.387-.216.173-.415.333-.59.506-.175.173-.336.345-.485.516-.15.17-.29.322-.416.449-.125.127-.255.272-.358.397-.103.124-.187.23-.258.314-.023.025-.063.084-.112.159-.05.074-.1.15-.14.222-.04.073-.082.158-.126.244-.045.085-.072.16-.093.221-.02.062-.042.143-.06.216-.016.075-.05.144-.05.226l.001.002c-.107.311-.061.597.004.844.065.247.162.456.277.63.117.175.268.348.43.47.16.121.334.234.512.314.177.08.39.143.571.188.183.045.377.077.575.099.197.022.38.04.556.04.177 0 .346-.016.513-.048.166-.031.331-.08.487-.15.156-.07.28-.158.391-.277.11-.12.178-.264.223-.423.045-.159.089-.327.09-.498.001-.17-.034-.34-.151-.475-.118-.135-.34-.203-.483-.311-.143-.108-.308-.34-.375-.563-.05-.17-.05-.379-.018-.518.032-.139.086-.219.153-.312.067-.092.13-.163.212-.247.082-.084.152-.163.237-.248.085-.085.164-.178.247-.266.082-.088.174-.196.252-.287.078-.092.142-.193.214-.297.073-.104.146-.212.198-.328.044-.096.149-.384.149-.384.037-.123.076-.249.104-.366.028-.118.064-.232.081-.35.018-.12.027-.254.024-.372a1.91 1.91 0 00-.062-.477z" />
+    </svg>
+  );
+
+  // Handler for OS selection
+  const handleOsSelect = (os: "windows" | "mac" | "linux") => {
+    setActiveOs(os);
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
+
+  const listItemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4, ease: "easeOut" },
+    },
+  };
+
+  return (
+    <motion.div
+      className="container mx-auto px-4 py-16 md:py-24 bg-white"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      {/* Page Header */}
+      <motion.h1
+        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
+        variants={itemVariants}
+      >
+        Download APOS Restaurant
+      </motion.h1>
+
+      {/* Value Reinforcement */}
+      <motion.p
+        className="text-lg text-[var(--color-gray-600)] text-center mb-12 max-w-2xl mx-auto"
+        variants={itemVariants}
+      >
+        Join thousands of restaurants streamlining their operations with our
+        powerful and intuitive POS system.
+      </motion.p>
+
+      {/* OS Selection Tabs */}
+      <motion.div className="flex justify-center mb-8" variants={itemVariants}>
+        <div className="inline-flex bg-[var(--color-primary-light)] rounded-lg p-1">
+          <motion.button
+            onClick={() => handleOsSelect("windows")}
+            className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
+              activeOs === "windows"
+                ? "bg-white text-[var(--color-primary)] shadow-sm"
+                : "text-[var(--color-gray-600)] hover:bg-white/50"
+            }`}
+            whileHover={{ scale: activeOs !== "windows" ? 1.05 : 1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <WindowsIcon /> Windows
+          </motion.button>
+          <motion.button
+            onClick={() => handleOsSelect("mac")}
+            className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
+              activeOs === "mac"
+                ? "bg-white text-[var(--color-primary)] shadow-sm"
+                : "text-[var(--color-gray-600)] hover:bg-white/50"
+            }`}
+            whileHover={{ scale: activeOs !== "mac" ? 1.05 : 1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <MacIcon /> macOS
+          </motion.button>
+          <motion.button
+            onClick={() => handleOsSelect("linux")}
+            className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
+              activeOs === "linux"
+                ? "bg-white text-[var(--color-primary)] shadow-sm"
+                : "text-[var(--color-gray-600)] hover:bg-white/50"
+            }`}
+            whileHover={{ scale: activeOs !== "linux" ? 1.05 : 1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <LinuxIcon /> Linux
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Download Card */}
+      <motion.div
+        className="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-[var(--color-primary-light)]"
+        variants={itemVariants}
+      >
+        <div className="p-8">
+          {/* Download Info Section */}
+          <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+            <div className="mb-6 md:mb-0">
+              <h2 className="text-2xl font-bold mb-2 flex items-center text-[var(--color-primary-dark)]">
+                {activeOs === "windows" && <WindowsIcon />}
+                {activeOs === "mac" && <MacIcon />}
+                {activeOs === "linux" && <LinuxIcon />}
+                APOS for{" "}
+                {activeOs === "windows"
+                  ? "Windows"
+                  : activeOs === "mac"
+                  ? "macOS"
+                  : "Linux"}
+              </h2>
+              <div className="text-sm text-[var(--color-gray-600)] space-y-1">
+                <p>Version: {versionInfo.version}</p>
+                <p>Released: {versionInfo.releaseDate}</p>
+                <p>Size: {versionInfo.size[activeOs]}</p>
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="flex flex-col items-center">
+              <motion.div
+                className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center mb-2"
+                whileHover={{ scale: 1.05 }}
+              >
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+                Virus Scanned
+              </motion.div>
+              <motion.div
+                className="bg-[var(--color-primary-light)] text-[var(--color-primary)] text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center"
+                whileHover={{ scale: 1.05 }}
+              >
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                Secure Download
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Download Button */}
+          <div className="text-center">
+            <motion.a
+              // href={`/downloads/apos-${activeOs}-${versionInfo.version}.${
+              //   activeOs === "windows"
+              //     ? "exe"
+              //     : activeOs === "mac"
+              //     ? "dmg"
+              //     : "AppImage"
+              // }`}
+              href="#"
+              className="inline-flex items-center justify-center bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-4 px-8 rounded-lg shadow-md text-lg transition-colors duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Download Now
+            </motion.a>
+            <motion.p
+              className="text-sm text-[var(--color-gray-600)] mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              By downloading, you agree to our{" "}
+              <Link
+                href="#"
+                className="text-[var(--color-primary)] hover:underline"
+              >
+                Terms of Service
+              </Link>
+            </motion.p>
+          </div>
+        </div>
+
+        {/* System Requirements */}
+        <div className="bg-[var(--color-primary-light)] border-t border-[var(--color-primary-light)]/50 p-6">
+          <h3 className="font-semibold mb-3 text-[var(--color-primary-dark)]">
+            System Requirements
+          </h3>
+          <AnimatePresence mode="wait">
+            <motion.ul
+              key={activeOs}
+              className="text-sm text-[var(--color-gray-600)] space-y-1.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {systemRequirements[activeOs].map((requirement, index) => (
+                <motion.li
+                  key={index}
+                  className="flex items-start"
+                  variants={listItemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={index}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <svg
+                    className="w-4 h-4 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  {requirement}
+                </motion.li>
+              ))}
+            </motion.ul>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* Installation Instructions */}
+      <motion.div className="max-w-2xl mx-auto mt-10" variants={itemVariants}>
+        <h3 className="text-xl font-semibold mb-4 text-[var(--color-primary-dark)]">
+          Installation Instructions
+        </h3>
+        <AnimatePresence mode="wait">
+          <motion.ol
+            key={activeOs}
+            className="space-y-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.li
+              className="flex"
+              variants={listItemVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.1 }}
+            >
+              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
+                1
+              </span>
+              <span className="text-[var(--color-gray-600)]">
+                {activeOs === "windows" &&
+                  "Download the APOS installer (.exe) file from the button above."}
+                {activeOs === "mac" &&
+                  "Download the APOS disk image (.dmg) file from the button above."}
+                {activeOs === "linux" &&
+                  "Download the APOS AppImage file from the button above."}
+              </span>
+            </motion.li>
+            <motion.li
+              className="flex"
+              variants={listItemVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.2 }}
+            >
+              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
+                2
+              </span>
+              <span className="text-[var(--color-gray-600)]">
+                {activeOs === "windows" &&
+                  "Double-click the downloaded file to start the installation wizard."}
+                {activeOs === "mac" &&
+                  "Double-click the downloaded .dmg file to open it."}
+                {activeOs === "linux" &&
+                  "Make the AppImage executable by right-clicking it, selecting Properties, and enabling 'Allow executing file as program' in the Permissions tab."}
+              </span>
+            </motion.li>
+            <motion.li
+              className="flex"
+              variants={listItemVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.3 }}
+            >
+              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
+                3
+              </span>
+              <span className="text-[var(--color-gray-600)]">
+                {activeOs === "windows" &&
+                  "Follow the on-screen instructions to complete the installation."}
+                {activeOs === "mac" &&
+                  "Drag the APOS Restaurant icon to the Applications folder."}
+                {activeOs === "linux" &&
+                  "Double-click the AppImage to run the application."}
+              </span>
+            </motion.li>
+            <motion.li
+              className="flex"
+              variants={listItemVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.4 }}
+            >
+              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
+                4
+              </span>
+              <span className="text-[var(--color-gray-600)]">
+                Launch APOS Restaurant from your desktop shortcut or
+                applications folder and begin setup.
+              </span>
+            </motion.li>
+          </motion.ol>
+        </AnimatePresence>
+
+        <motion.p
+          className="mt-6 text-[var(--color-gray-600)]"
+          variants={itemVariants}
+        >
+          Need help with installation?{" "}
+          <Link
+            href="/contact"
+            className="text-[var(--color-primary)] hover:underline"
+          >
+            Contact our support team
+          </Link>{" "}
+          for assistance.
+        </motion.p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+
+=== src\app\solutions\page.tsx ===
+
+"use client";
+import React from "react";
+import Link from "next/link";
+import { motion, useInView } from "framer-motion";
+
+export default function SolutionsPage() {
+  // Refs for each section
+  const section1Ref = React.useRef(null);
+  const section2Ref = React.useRef(null);
+  const section3Ref = React.useRef(null);
+  const section4Ref = React.useRef(null);
+  const ctaRef = React.useRef(null);
+
+  // Check if sections are in viewport using Framer Motion's useInView
+  const section1Visible = useInView(section1Ref, { once: true, amount: 0.2 });
+  const section2Visible = useInView(section2Ref, { once: true, amount: 0.2 });
+  const section3Visible = useInView(section3Ref, { once: true, amount: 0.2 });
+  const section4Visible = useInView(section4Ref, { once: true, amount: 0.2 });
+  const ctaVisible = useInView(ctaRef, { once: true, amount: 0.3 });
+
+  // Animation variants
+  const fadeIn = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: "easeOut" },
+    },
+  };
+
+  const slideInLeft = {
+    hidden: { opacity: 0, x: -50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.7, ease: "easeOut" },
+    },
+  };
+
+  const slideInRight = {
+    hidden: { opacity: 0, x: 50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.7, ease: "easeOut" },
+    },
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const listItemVariant = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-16 md:py-24 bg-white">
+      {/* Page Title */}
+      <motion.h1
+        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        APOS Restaurant Solutions: Powering Your Success
+      </motion.h1>
+
+      {/* Introductory Paragraph */}
+      <motion.p
+        className="text-lg text-[var(--color-gray-600)] text-center mb-16 max-w-3xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+      >
+        Our comprehensive point-of-sale system is designed specifically for
+        restaurants, offering a suite of powerful features that streamline
+        operations, enhance customer experiences, and boost your bottom line.
+      </motion.p>
+
+      {/* Feature 1: Intuitive Order Taking */}
+      <motion.div
+        ref={section1Ref}
+        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
+      >
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+          {/* Visual Placeholder (Left on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
+            variants={slideInLeft}
+            initial="hidden"
+            animate={section1Visible ? "visible" : "hidden"}
+          >
+            <div className="text-center p-4">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-10 h-10 text-[var(--color-primary)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <p>
+                Visual Placeholder: Interactive screen of order management
+                interface
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Text Content (Right on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2"
+            variants={slideInRight}
+            initial="hidden"
+            animate={section1Visible ? "visible" : "hidden"}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
+              Intuitive Order Taking & Menu Management
+            </h2>
+            <p className="text-lg text-[var(--color-gray-600)] mb-6">
+              Empower your staff with a lightning-fast, intuitive ordering
+              system that reduces training time and eliminates errors. Our
+              customizable menu management tools adapt to your restaurants
+              unique needs, from simple cafés to complex fine dining
+              establishments.
+            </p>
+            <motion.ul
+              className="space-y-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate={section1Visible ? "visible" : "hidden"}
+            >
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Customizable menu categories, items, and modifiers with easy
+                  drag-and-drop editing
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Quick-add favorites and combo meal builders to speed up order
+                  entry
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Smart item search with voice recognition capabilities
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Automated prompts for upselling and dietary restriction alerts
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Seasonal menu management with scheduled
+                  activation/deactivation dates
+                </span>
+              </motion.li>
+            </motion.ul>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Feature 2: Table Management */}
+      <motion.div
+        ref={section2Ref}
+        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
+      >
+        <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-16">
+          {/* Visual Placeholder (Right on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
+            variants={slideInRight}
+            initial="hidden"
+            animate={section2Visible ? "visible" : "hidden"}
+          >
+            <div className="text-center p-4">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-10 h-10 text-[var(--color-primary)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <p>
+                Visual Placeholder: Interactive table layout with color-coded
+                statuses
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Text Content (Left on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2"
+            variants={slideInLeft}
+            initial="hidden"
+            animate={section2Visible ? "visible" : "hidden"}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
+              Seamless Table & Floor Plan Management
+            </h2>
+            <p className="text-lg text-[var(--color-gray-600)] mb-6">
+              Optimize your restaurants floor plan and table management with our
+              intuitive visual interface. Track table status in real-time,
+              manage reservations, and maximize seating efficiency to increase
+              turns and revenue.
+            </p>
+            <motion.ul
+              className="space-y-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate={section2Visible ? "visible" : "hidden"}
+            >
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Drag-and-drop floor plan designer with custom table shapes and
+                  sizes
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Color-coded status indicators for instant visual assessment
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Integrated reservation system with waitlist management
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Table timer tracking for optimized turnover rates
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Server section assignments with balanced workload distribution
+                </span>
+              </motion.li>
+            </motion.ul>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Feature 3: Analytics & Reporting */}
+      <motion.div
+        ref={section3Ref}
+        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
+      >
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+          {/* Visual Placeholder (Left on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
+            variants={slideInLeft}
+            initial="hidden"
+            animate={section3Visible ? "visible" : "hidden"}
+          >
+            <div className="text-center p-4">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-10 h-10 text-[var(--color-primary)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <p>
+                Visual Placeholder: Dashboard with customizable reports and
+                visualizations
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Text Content (Right on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2"
+            variants={slideInRight}
+            initial="hidden"
+            animate={section3Visible ? "visible" : "hidden"}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
+              Real-time Reporting & Analytics
+            </h2>
+            <p className="text-lg text-[var(--color-gray-600)] mb-6">
+              Gain powerful insights into your restaurants performance with our
+              comprehensive reporting and analytics tools. Make data-driven
+              decisions with customizable dashboards that highlight key metrics
+              and trends in real-time.
+            </p>
+            <motion.ul
+              className="space-y-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate={section3Visible ? "visible" : "hidden"}
+            >
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Customizable dashboards with your choice of key performance
+                  indicators
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Sales analysis by menu item, category, time period, and more
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Labor cost reporting with scheduling optimization
+                  recommendations
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Inventory management and food cost percentage tracking
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Automated reports delivered to your email on your schedule
+                </span>
+              </motion.li>
+            </motion.ul>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Feature 4: Kitchen Display System */}
+      <motion.div
+        ref={section4Ref}
+        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
+      >
+        <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-16">
+          {/* Visual Placeholder (Right on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
+            variants={slideInRight}
+            initial="hidden"
+            animate={section4Visible ? "visible" : "hidden"}
+          >
+            <div className="text-center p-4">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-10 h-10 text-[var(--color-primary)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <p>
+                Visual Placeholder: Kitchen display screen with order tiles and
+                timers
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Text Content (Left on desktop) */}
+          <motion.div
+            className="w-full md:w-1/2"
+            variants={slideInLeft}
+            initial="hidden"
+            animate={section4Visible ? "visible" : "hidden"}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
+              Kitchen Display System & Workflow Optimization
+            </h2>
+            <p className="text-lg text-[var(--color-gray-600)] mb-6">
+              Streamline communication between front-of-house and kitchen staff
+              with our robust Kitchen Display System (KDS). Eliminate paper
+              tickets, reduce errors, and optimize food preparation times for
+              faster service and higher customer satisfaction.
+            </p>
+            <motion.ul
+              className="space-y-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate={section4Visible ? "visible" : "hidden"}
+            >
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Digital order tickets with cooking times and special
+                  instructions highlighted
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Color-coded order age indicators for priority management
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Course firing system for perfectly timed multi-course meals
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Meal ready notifications for servers through mobile devices
+                </span>
+              </motion.li>
+              <motion.li
+                className="flex items-start"
+                variants={listItemVariant}
+              >
+                <svg
+                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-[var(--color-gray-600)]">
+                  Ingredient-level preparation instructions for consistent
+                  quality
+                </span>
+              </motion.li>
+            </motion.ul>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* CTA Section */}
+      <motion.div
+        ref={ctaRef}
+        className="py-16 mt-8 bg-[var(--color-primary)] text-white rounded-xl"
+        variants={fadeIn}
+        initial="hidden"
+        animate={ctaVisible ? "visible" : "hidden"}
+      >
+        <div className="text-center px-4 md:px-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            Ready to see APOS Restaurant in action?
+          </h2>
+          <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
+            Experience how our solutions can transform your restaurant
+            operations and boost your bottom line.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/download"
+                className="bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold py-3 px-6 rounded-lg shadow-md inline-block"
+              >
+                Request a Demo
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/contact"
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[var(--color-primary)] font-semibold py-3 px-6 rounded-lg inline-block"
+              >
+                Contact Sales
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+
+=== src\components\ScrollToTop.tsx ===
+
+"use client";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiArrowUp } from "react-icons/fi";
+
+export default function ScrollToTop() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Calculate scroll position and progress
+  const handleScroll = () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
+
+    // Calculate scroll percentage (0-100)
+    const scrollPercentage = (scrollTop / windowHeight) * 100;
+
+    // Update state
+    setScrollProgress(scrollPercentage);
+    setIsVisible(scrollTop > 300); // Show after scrolling 300px
+  };
+
+  // Add scroll event listener
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  // Calculate circle properties
+  const circleRadius = 22;
+  const circumference = 2 * Math.PI * circleRadius;
+  const offset = circumference - (scrollProgress / 100) * circumference;
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          className="fixed right-6 bottom-6 z-50"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.button
+            onClick={scrollToTop}
+            className="relative flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg border border-[var(--color-primary-light)] focus:outline-none"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Scroll to top"
+          >
+            {/* SVG for the circular progress indicator */}
+            <svg
+              className="absolute"
+              width="50"
+              height="50"
+              viewBox="0 0 50 50"
+            >
+              {/* Background circle */}
+              <circle
+                cx="25"
+                cy="25"
+                r={circleRadius}
+                fill="none"
+                stroke="var(--color-gray-200)"
+                strokeWidth="2"
+              />
+
+              {/* Progress circle */}
+              <circle
+                cx="25"
+                cy="25"
+                r={circleRadius}
+                fill="none"
+                stroke="var(--color-primary)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+                transform="rotate(-90 25 25)"
+              />
+            </svg>
+
+            {/* Arrow icon */}
+            <FiArrowUp className="relative z-10 w-5 h-5 text-[var(--color-primary)]" />
+          </motion.button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+
+=== src\components\layout\Footer.tsx ===
+
+import React from "react";
+import Link from "next/link";
+
+const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
+  // Social media icons as SVG components
+  const FacebookIcon = () => (
+    <svg
+      className="w-5 h-5 fill-current"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+    >
+      <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+    </svg>
+  );
+
+  const InstagramIcon = () => (
+    <svg
+      className="w-5 h-5 fill-current"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+    </svg>
+  );
+
+  const TwitterIcon = () => (
+    <svg
+      className="w-5 h-5 fill-current"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+    >
+      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+    </svg>
+  );
+
+  return (
+    <div className="container mx-auto py-2">
+      <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        {/* Copyright */}
+        <div className="text-sm">
+          © {currentYear} APOS Restaurant. All Rights Reserved.
+        </div>
+
+        {/* Secondary Navigation */}
+        <div className="text-sm space-x-6">
+          <Link
+            href="#"
+            className="hover:text-blue-300 transition-colors duration-300"
+          >
+            Privacy Policy
+          </Link>
+          <Link
+            href="#"
+            className="hover:text-blue-300 transition-colors duration-300"
+          >
+            Terms of Service
+          </Link>
+        </div>
+
+        {/* Social Media Links */}
+        <div className="flex space-x-4">
+          <a
+            href="#"
+            className="hover:text-blue-300 transition-colors duration-300"
+            aria-label="Facebook"
+          >
+            <FacebookIcon />
+          </a>
+          <a
+            href="#"
+            className="hover:text-blue-300 transition-colors duration-300"
+            aria-label="Instagram"
+          >
+            <InstagramIcon />
+          </a>
+          <a
+            href="#"
+            className="hover:text-blue-300 transition-colors duration-300"
+            aria-label="Twitter"
+          >
+            <TwitterIcon />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Footer;
+
+
+=== src\components\layout\GlobalLayout.tsx ===
+
+import React from "react";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+
+interface GlobalLayoutProps {
+  children: React.ReactNode;
+}
+
+const GlobalLayout: React.FC<GlobalLayoutProps> = ({ children }) => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <header className="bg-white p-4 shadow-sm border-b border-[var(--color-primary-light)]">
+        <Navbar />
+      </header>
+      <main className="flex-grow bg-white">{children}</main>
+      <footer className="bg-[var(--color-primary)] text-white p-4">
+        <Footer />
+      </footer>
+    </div>
+  );
+};
+
+export default GlobalLayout;
+
+
+=== src\components\layout\Navbar.tsx ===
+
+"use client";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+
+const Navbar: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close menu when clicking escape key
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+
+    // Prevent body scroll when menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "auto";
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Solutions", href: "/solutions" },
+    { name: "Download", href: "/download" },
+    { name: "Blog", href: "/blog" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  // Animation variants
+  const logoVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const navLinkVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+        delay: i * 0.1,
+        ease: "easeOut",
+      },
+    }),
+    hover: {
+      y: -3,
+      color: "var(--color-primary)",
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  const underlineVariants = {
+    hidden: { scaleX: 0 },
+    visible: {
+      scaleX: 1,
+      transition: {
+        duration: 0.4,
+        ease: [0.65, 0, 0.35, 1], // Custom cubic bezier for a nice spring effect
+      },
+    },
+  };
+
+  const mobileMenuVariants = {
+    closed: {
+      x: "100%",
+      transition: {
+        type: "tween",
+        duration: 0.3,
+        ease: "easeInOut",
+        when: "afterChildren",
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+      },
+    },
+    open: {
+      x: 0,
+      transition: {
+        type: "tween",
+        duration: 0.3,
+        ease: "easeInOut",
+        when: "beforeChildren",
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const mobileNavLinkVariants = {
+    closed: {
+      opacity: 0,
+      x: 20,
+      transition: { duration: 0.2 },
+    },
+    open: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.2 },
+    },
+  };
+
+  const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.3 },
+    },
+  };
+
+  const hamburgerIconVariants = {
+    closed: { rotate: 0 },
+    open: { rotate: 180, transition: { duration: 0.3 } },
+  };
+
+  return (
+    <nav className="w-full">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Logo */}
+        <motion.div initial="hidden" animate="visible" variants={logoVariants}>
+          <Link
+            href="/"
+            className="font-bold text-xl transition-colors duration-300 text-[var(--color-primary)]"
+          >
+            APOS Restaurant
+          </Link>
+        </motion.div>
+
+        {/* Desktop Navigation Links */}
+        <div className="hidden md:flex space-x-8">
+          {navLinks.map((link, i) => (
+            <motion.div
+              key={link.name}
+              custom={i}
+              initial="hidden"
+              animate="visible"
+              variants={navLinkVariants}
+              whileHover="hover"
+              className="relative"
+            >
+              <Link
+                href={link.href}
+                className={`relative py-2 transition-colors duration-300 
+                  ${
+                    pathname === link.href
+                      ? "text-[var(--color-primary)] font-medium"
+                      : "text-[var(--color-gray-600)]"
+                  }`}
+              >
+                {link.name}
+              </Link>
+              {pathname === link.href && (
+                <motion.span
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--color-primary)] transform origin-left"
+                  variants={underlineVariants}
+                  initial="hidden"
+                  animate="visible"
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <motion.button
+          type="button"
+          className="md:hidden flex items-center text-[var(--color-primary)]"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
+          variants={hamburgerIconVariants}
+          animate={isMenuOpen ? "open" : "closed"}
+        >
+          <svg
+            className="w-6 h-6 transition-transform duration-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {isMenuOpen ? (
+              // X icon when menu is open
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              // Hamburger icon when menu is closed
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </motion.button>
+      </div>
+
+      {/* Mobile Menu Panel */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 bg-[var(--color-primary-light)] bg-opacity-80 z-40 md:hidden"
+              onClick={toggleMenu}
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            />
+
+            {/* Menu Panel */}
+            <motion.div
+              className="fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-lg"
+              variants={mobileMenuVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+            >
+              <div className="p-5">
+                <div className="flex justify-end">
+                  <motion.button
+                    type="button"
+                    onClick={toggleMenu}
+                    className="text-[var(--color-gray-600)] hover:text-[var(--color-primary)] transition-colors duration-300"
+                    aria-label="Close menu"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </motion.button>
+                </div>
+
+                <div className="mt-6 flex flex-col space-y-4">
+                  {navLinks.map((link) => (
+                    <motion.div
+                      key={link.name}
+                      variants={mobileNavLinkVariants}
+                      whileHover={{ x: 5 }}
+                    >
+                      <Link
+                        href={link.href}
+                        className={`block py-2 transition-colors duration-300 hover:text-[var(--color-primary)] 
+                          ${
+                            pathname === link.href
+                              ? "text-[var(--color-primary)] font-medium"
+                              : "text-[var(--color-gray-600)]"
+                          }`}
+                        onClick={toggleMenu}
+                      >
+                        {link.name}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+
+=== src\components\theme\ThemeContext.tsx ===
+
+"use client";
+import React, { createContext, useState, useEffect, useContext } from "react";
+
+// Theme definitions
+export const themes = [
+  {
+    name: "Blue",
+    primary: "#0055ff",
+    primaryLight: "#e6f0ff",
+    primaryDark: "#0044cc",
+    icon: "🔵",
+  },
+  {
+    name: "Orange",
+    primary: "#FF5500",
+    primaryLight: "#FFF3E0",
+    primaryDark: "#E64A19",
+    icon: "🟠",
+  },
+  {
+    name: "Green",
+    primary: "#2E7D32",
+    primaryLight: "#E8F5E9",
+    primaryDark: "#1B5E20",
+    icon: "🟢",
+  },
+  {
+    name: "Purple",
+    primary: "#7B1FA2",
+    primaryLight: "#F3E5F5",
+    primaryDark: "#4A148C",
+    icon: "🟣",
+  },
+  {
+    name: "Pink",
+    primary: "#D81B60",
+    primaryLight: "#FCE4EC",
+    primaryDark: "#AD1457",
+    icon: "🔴",
+  },
+];
+
+// Create context type
+interface ThemeContextType {
+  currentThemeIndex: number;
+  setTheme: (index: number) => void;
+  themeName: string;
+}
+
+// Create context with default values
+const ThemeContext = createContext<ThemeContextType>({
+  currentThemeIndex: 0,
+  setTheme: () => {},
+  themeName: "Blue",
+});
+
+// Hook to use the theme context
+export const useTheme = () => useContext(ThemeContext);
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
+
+  // Apply theme by updating CSS variables
+  const applyTheme = (themeIndex: number) => {
+    const theme = themes[themeIndex];
+    document.documentElement.style.setProperty(
+      "--color-primary",
+      theme.primary
+    );
+    document.documentElement.style.setProperty(
+      "--color-primary-light",
+      theme.primaryLight
+    );
+    document.documentElement.style.setProperty(
+      "--color-primary-dark",
+      theme.primaryDark
+    );
+
+    // Save to localStorage for persistence
+    localStorage.setItem("theme", themeIndex.toString());
+  };
+
+  // Set theme and apply changes
+  const setTheme = (index: number) => {
+    setCurrentThemeIndex(index);
+    applyTheme(index);
+  };
+
+  // Load theme from localStorage on initial render
+  useEffect(() => {
+    // We need to check if window is defined because this is a Next.js app with SSR
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme !== null) {
+        const themeIndex = parseInt(savedTheme);
+        // Validate to ensure it's within bounds
+        if (themeIndex >= 0 && themeIndex < themes.length) {
+          setCurrentThemeIndex(themeIndex);
+          applyTheme(themeIndex);
+        }
+      }
+    }
+  }, []);
+
+  return (
+    <ThemeContext.Provider
+      value={{
+        currentThemeIndex,
+        setTheme,
+        themeName: themes[currentThemeIndex].name,
+      }}
+    >
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+
+=== src\components\theme\ThemeSwitcher.tsx ===
+
+"use client";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiSettings, FiCheck } from "react-icons/fi";
+import { useTheme, themes } from "./ThemeContext";
+
+export default function ThemeSwitcher() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { currentThemeIndex, setTheme } = useTheme();
+
+  // Handle theme selection
+  const handleThemeSelect = (index: number) => {
+    setTheme(index);
+    // Close the popup after a small delay
+    setTimeout(() => setIsOpen(false), 300);
+  };
+
+  // Animation variants
+  const containerVariants = {
+    closed: {
+      opacity: 0,
+      y: 20,
+      scale: 0.8,
+      transition: { duration: 0.3, ease: "easeInOut" },
+    },
+    open: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.4, ease: "easeOut" },
+    },
+  };
+
+  const buttonVariants = {
+    rest: { scale: 1 },
+    hover: { scale: 1.1, rotate: 15, transition: { duration: 0.3 } },
+    tap: { scale: 0.9 },
+  };
+
+  const themeOptionVariants = {
+    rest: { x: 0 },
+    hover: { x: 5, transition: { duration: 0.2 } },
+    tap: { scale: 0.98 },
+  };
+
+  return (
+    <div className="fixed left-6 bottom-6 z-50">
+      {/* Theme Switcher Button */}
+      <motion.button
+        className="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white shadow-lg flex items-center justify-center"
+        onClick={() => setIsOpen(!isOpen)}
+        variants={buttonVariants}
+        initial="rest"
+        whileHover="hover"
+        whileTap="tap"
+        aria-label="Change theme"
+      >
+        <FiSettings className="w-5 h-5" />
+      </motion.button>
+
+      {/* Theme Options Popup */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="absolute left-0 bottom-16 bg-white rounded-lg shadow-xl p-4 w-64 border border-[var(--color-primary-light)]"
+            variants={containerVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
+          >
+            <h3 className="text-[var(--color-primary-dark)] font-semibold mb-3 text-center">
+              Choose a Theme
+            </h3>
+            <div className="space-y-2">
+              {themes.map((theme, index) => (
+                <motion.button
+                  key={theme.name}
+                  className={`w-full flex items-center p-2 rounded-md transition-colors ${
+                    currentThemeIndex === index
+                      ? "bg-[var(--color-primary-light)]"
+                      : "hover:bg-[var(--color-gray-100)]"
+                  }`}
+                  onClick={() => handleThemeSelect(index)}
+                  variants={themeOptionVariants}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  <div
+                    className="w-8 h-8 rounded-full mr-3 flex items-center justify-center text-lg"
+                    style={{
+                      backgroundColor: theme.primaryLight,
+                      color: theme.primary,
+                    }}
+                  >
+                    {theme.icon}
+                  </div>
+                  <span className="flex-grow text-left text-[var(--color-gray-800)]">
+                    {theme.name}
+                  </span>
+                  {currentThemeIndex === index && (
+                    <FiCheck className="w-5 h-5 text-[var(--color-primary)]" />
+                  )}
+                </motion.button>
+              ))}
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-[var(--color-gray-200)] text-center text-xs text-[var(--color-gray-600)]">
+              Theme changes will persist across sessions
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
