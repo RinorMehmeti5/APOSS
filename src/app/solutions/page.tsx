@@ -85,12 +85,12 @@ export default function SolutionsPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.2 }}
       >
-        Our comprehensive point-of-sale system is designed specifically for
-        restaurants, offering a suite of powerful features that streamline
-        operations, enhance customer experiences, and boost your bottom line.
+        Our comprehensive business platform is designed for any industry,
+        offering a suite of powerful features that streamline operations,
+        enhance client experiences, and boost your bottom line.
       </motion.p>
 
-      {/* Feature 1: Intuitive Order Taking */}
+      {/* Feature 1: Workflow & Task Management */}
       <motion.div
         ref={section1Ref}
         className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
@@ -120,10 +120,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
               </div>
-              <p>
-                Visual Placeholder: Interactive screen of order management
-                interface
-              </p>
+              <p>Visual Placeholder: Interactive task management dashboard</p>
             </div>
           </motion.div>
 
@@ -136,14 +133,14 @@ export default function SolutionsPage() {
             transition={{ delay: 0.2 }}
           >
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Intuitive Order Taking & Menu Management
+              Intuitive Workflow & Service Management
             </h2>
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Empower your staff with a lightning-fast, intuitive ordering
-              system that reduces training time and eliminates errors. Our
-              customizable menu management tools adapt to your restaurants
-              unique needs, from simple cafés to complex fine dining
-              establishments.
+              Empower your team with a lightning-fast, intuitive system that
+              reduces training time and minimizes errors. Our customizable
+              service and product management tools adapt to your business's
+              unique needs, from simple projects to complex enterprise
+              solutions.
             </p>
             <motion.ul
               className="space-y-3"
@@ -170,8 +167,8 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Customizable menu categories, items, and modifiers with easy
-                  drag-and-drop editing
+                  Customizable service catalogs, project templates, and
+                  modifiers with easy drag-and-drop editing
                 </span>
               </motion.li>
               <motion.li
@@ -193,8 +190,8 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Quick-add favorites and combo meal builders to speed up order
-                  entry
+                  Quick-add tasks and service package builders to speed up
+                  project entry
                 </span>
               </motion.li>
               <motion.li
@@ -216,7 +213,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Smart item search with voice recognition capabilities
+                  Smart search with voice recognition capabilities
                 </span>
               </motion.li>
               <motion.li
@@ -238,7 +235,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Automated prompts for upselling and dietary restriction alerts
+                  Automated prompts for service expansion and compliance alerts
                 </span>
               </motion.li>
               <motion.li
@@ -260,8 +257,8 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Seasonal menu management with scheduled
-                  activation/deactivation dates
+                  Lifecycle management with scheduled activation/deactivation
+                  dates
                 </span>
               </motion.li>
             </motion.ul>
@@ -269,7 +266,7 @@ export default function SolutionsPage() {
         </div>
       </motion.div>
 
-      {/* Feature 2: Table Management */}
+      {/* Feature 2: Resource & Asset Coordination */}
       <motion.div
         ref={section2Ref}
         className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
@@ -300,8 +297,8 @@ export default function SolutionsPage() {
                 </svg>
               </div>
               <p>
-                Visual Placeholder: Interactive table layout with color-coded
-                statuses
+                Visual Placeholder: Interactive resource schedule with
+                color-coded statuses
               </p>
             </div>
           </motion.div>
@@ -315,13 +312,13 @@ export default function SolutionsPage() {
             transition={{ delay: 0.2 }}
           >
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Seamless Table & Floor Plan Management
+              Dynamic Resource & Asset Coordination
             </h2>
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Optimize your restaurants floor plan and table management with our
-              intuitive visual interface. Track table status in real-time,
-              manage reservations, and maximize seating efficiency to increase
-              turns and revenue.
+              Optimize your business's resources and assets with our intuitive
+              visual interface. Track asset status in real-time, manage
+              bookings, and maximize utilization efficiency to increase
+              throughput and revenue.
             </p>
             <motion.ul
               className="space-y-3"
@@ -348,8 +345,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Drag-and-drop floor plan designer with custom table shapes and
-                  sizes
+                  Drag-and-drop schedule designer with custom asset types
                 </span>
               </motion.li>
               <motion.li
@@ -393,7 +389,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Integrated reservation system with waitlist management
+                  Integrated booking system with conflict management
                 </span>
               </motion.li>
               <motion.li
@@ -415,7 +411,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Table timer tracking for optimized turnover rates
+                  Usage timer tracking for optimized billing and maintenance
                 </span>
               </motion.li>
               <motion.li
@@ -437,7 +433,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Server section assignments with balanced workload distribution
+                  Team assignments with balanced workload distribution
                 </span>
               </motion.li>
             </motion.ul>
@@ -494,7 +490,7 @@ export default function SolutionsPage() {
               Real-time Reporting & Analytics
             </h2>
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Gain powerful insights into your restaurants performance with our
+              Gain powerful insights into your business's performance with our
               comprehensive reporting and analytics tools. Make data-driven
               decisions with customizable dashboards that highlight key metrics
               and trends in real-time.
@@ -525,7 +521,7 @@ export default function SolutionsPage() {
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
                   Customizable dashboards with your choice of key performance
-                  indicators
+                  indicators (KPIs)
                 </span>
               </motion.li>
               <motion.li
@@ -547,7 +543,8 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Sales analysis by menu item, category, time period, and more
+                  Sales and revenue analysis by service, category, time period,
+                  and more
                 </span>
               </motion.li>
               <motion.li
@@ -592,7 +589,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Inventory management and food cost percentage tracking
+                  Inventory and resource cost percentage tracking
                 </span>
               </motion.li>
               <motion.li
@@ -622,7 +619,7 @@ export default function SolutionsPage() {
         </div>
       </motion.div>
 
-      {/* Feature 4: Kitchen Display System */}
+      {/* Feature 4: Team & Workflow Synchronization */}
       <motion.div
         ref={section4Ref}
         className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
@@ -653,8 +650,8 @@ export default function SolutionsPage() {
                 </svg>
               </div>
               <p>
-                Visual Placeholder: Kitchen display screen with order tiles and
-                timers
+                Visual Placeholder: Team collaboration screen with task tiles
+                and timers
               </p>
             </div>
           </motion.div>
@@ -668,13 +665,13 @@ export default function SolutionsPage() {
             transition={{ delay: 0.2 }}
           >
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Kitchen Display System & Workflow Optimization
+              Team & Workflow Synchronization
             </h2>
             <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Streamline communication between front-of-house and kitchen staff
-              with our robust Kitchen Display System (KDS). Eliminate paper
-              tickets, reduce errors, and optimize food preparation times for
-              faster service and higher customer satisfaction.
+              Streamline communication between your front-line and back-end
+              teams with our robust synchronization system. Eliminate paper
+              trails, reduce errors, and optimize task completion times for
+              faster service and higher client satisfaction.
             </p>
             <motion.ul
               className="space-y-3"
@@ -701,8 +698,8 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Digital order tickets with cooking times and special
-                  instructions highlighted
+                  Digital task cards with timers and special instructions
+                  highlighted
                 </span>
               </motion.li>
               <motion.li
@@ -724,7 +721,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Color-coded order age indicators for priority management
+                  Color-coded task age indicators for priority management
                 </span>
               </motion.li>
               <motion.li
@@ -746,7 +743,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Course firing system for perfectly timed multi-course meals
+                  Workflow sequencing for perfectly timed multi-stage projects
                 </span>
               </motion.li>
               <motion.li
@@ -768,7 +765,8 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Meal ready notifications for servers through mobile devices
+                  Task completion notifications for team members via mobile
+                  devices
                 </span>
               </motion.li>
               <motion.li
@@ -790,8 +788,7 @@ export default function SolutionsPage() {
                   />
                 </svg>
                 <span className="text-[var(--color-gray-600)]">
-                  Ingredient-level preparation instructions for consistent
-                  quality
+                  Component-level instructions for consistent quality control
                 </span>
               </motion.li>
             </motion.ul>
@@ -812,8 +809,8 @@ export default function SolutionsPage() {
             Ready to see APOS Solutions in action?
           </h2>
           <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
-            Experience how our solutions can transform your restaurant
-            operations and boost your bottom line.
+            Experience how our platform can transform your business operations
+            and boost your bottom line.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
