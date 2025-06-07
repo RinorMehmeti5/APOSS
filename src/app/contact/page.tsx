@@ -493,7 +493,7 @@ export default function ContactPage() {
           </div>
 
           {/* Business Hours */}
-          <div className="bg-white p-8 rounded-2xl shadow-md border border-[var(--color-primary-light)]">
+          {/* <div className="bg-white p-8 rounded-2xl shadow-md border border-[var(--color-primary-light)]">
             <h3 className="text-xl font-semibold mb-4 text-[var(--color-primary-dark)]">
               Business Hours
             </h3>
@@ -519,7 +519,7 @@ export default function ContactPage() {
                 </span>
               </li>
             </ul>
-          </div>
+          </div> */}
         </motion.div>
       </motion.div>
     </motion.div>

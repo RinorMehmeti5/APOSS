@@ -10,6 +10,7 @@ import {
   FiCreditCard,
   FiCloud,
 } from "react-icons/fi";
+import Image from "next/image";
 
 // Feature data with icons
 const features = [
@@ -139,7 +140,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 md:py-24 px-4 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
             {/* Text Content Column */}
@@ -223,7 +224,7 @@ export default function Home() {
         </div>
       </section>
       {/* Partners Section */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 md:py-24 px-4 bg-white">
         <div className="container mx-auto px-4">
           {/* Section Title */}
           <motion.h2
@@ -252,7 +253,13 @@ export default function Home() {
               <div className="text-center">
                 <div className="h-16 flex items-center justify-center mb-2">
                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-                    SUNMI
+                    <Image
+                      src="/images/sunmi.png"
+                      alt="Sunmi"
+                      width={120}
+                      height={60}
+                      className="object-contain"
+                    />
                   </span>
                 </div>
                 <p className="text-sm text-[var(--color-gray-600)]">
@@ -269,7 +276,13 @@ export default function Home() {
               <div className="text-center">
                 <div className="h-16 flex items-center justify-center mb-2">
                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-                    SoftPay
+                    <Image
+                      src="/images/softpay.png"
+                      alt="SoftPay"
+                      width={120}
+                      height={60}
+                      className="object-contain"
+                    />
                   </span>
                 </div>
                 <p className="text-sm text-[var(--color-gray-600)]">
@@ -286,7 +299,13 @@ export default function Home() {
               <div className="text-center">
                 <div className="h-16 flex items-center justify-center mb-2">
                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-                    SwiPay
+                    <Image
+                      src="/images/swipay.png"
+                      alt="SwiPay"
+                      width={120}
+                      height={60}
+                      className="object-contain"
+                    />
                   </span>
                 </div>
                 <p className="text-sm text-[var(--color-gray-600)]">
@@ -303,7 +322,13 @@ export default function Home() {
               <div className="text-center">
                 <div className="h-16 flex items-center justify-center mb-2">
                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-                    Elavon
+                    <Image
+                      src="/images/elavon.png"
+                      alt="Elavon"
+                      width={120}
+                      height={60}
+                      className="object-contain"
+                    />
                   </span>
                 </div>
                 <p className="text-sm text-[var(--color-gray-600)]">
@@ -329,7 +354,7 @@ export default function Home() {
       </section>
 
       {/* Key Features Section */}
-      <section className="py-16 md:py-24 bg-[var(--color-primary-light)]">
+      <section className="py-16 md:py-24 px-4 bg-[var(--color-primary-light)]">
         <div className="container mx-auto px-4">
           {/* Section Title */}
           <motion.h2
@@ -379,7 +404,7 @@ export default function Home() {
       </section>
 
       {/* Customer Testimonials Section */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 md:py-24 px-4 bg-white">
         <div className="container mx-auto px-4">
           {/* Section Title */}
           <motion.h2
@@ -530,7 +555,7 @@ export default function Home() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-16 md:py-24 bg-[var(--color-primary)] text-white">
+      <section className="py-16 md:py-24 px-4 bg-[var(--color-primary)] text-white">
         <div className="container mx-auto px-4 text-center">
           {/* CTA Headline */}
           <motion.h2
