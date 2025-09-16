@@ -239,7 +239,8 @@ export default function Home() {
 
           {/* Partners Grid */}
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            // className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -292,7 +293,7 @@ export default function Home() {
             </motion.div>
 
             {/* SwiPay */}
-            <motion.div
+            {/* <motion.div
               className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] flex items-center justify-center"
               whileHover={{ y: -5 }}
             >
@@ -312,10 +313,10 @@ export default function Home() {
                   Payment Solutions
                 </p>
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Elavon */}
-            <motion.div
+            {/* <motion.div
               className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] flex items-center justify-center"
               whileHover={{ y: -5 }}
             >
@@ -335,7 +336,7 @@ export default function Home() {
                   Payment Processing
                 </p>
               </div>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
 
           {/* Partner Description */}
