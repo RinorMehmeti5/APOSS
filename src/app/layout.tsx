@@ -35,7 +35,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <GlobalLayout>{children}</GlobalLayout>
-          <ThemeSwitcher />
+          {/* <ThemeSwitcher /> */}
           <ScrollToTop />
         </ThemeProvider>
       </body>
