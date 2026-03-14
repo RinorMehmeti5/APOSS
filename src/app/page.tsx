@@ -1,681 +1,308 @@
 "use client";
-import React from "react";
-// import Link from "next/link";
-import { motion } from "framer-motion";
-// import {
-//   FiCoffee,
-//   FiHome,
-//   FiPieChart,
-//   FiClock,
-//   FiCreditCard,
-//   FiCloud,
-// } from "react-icons/fi";
+import React, { useRef } from "react";
+import Link from "next/link";
 import Image from "next/image";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import {
+  FiCoffee,
+  FiGrid,
+  FiPieChart,
+  FiClock,
+  FiCreditCard,
+  FiCloud,
+} from "react-icons/fi";
+import ScatteredText from "@/components/ui/ScatteredText";
+import TextLineReveal from "@/components/ui/TextLineReveal";
+import InfiniteTextTicker from "@/components/ui/InfiniteTextTicker";
+import HorizontalScrollSection from "@/components/ui/HorizontalScrollSection";
+import StackingCards from "@/components/ui/StackingCards";
+import ImageClipReveal from "@/components/ui/ImageClipReveal";
+import TestimonialCardFan from "@/components/ui/TestimonialCardFan";
+import SpotlightReveal from "@/components/ui/SpotlightReveal";
+import { useCountUp } from "@/hooks/useGSAPAnimations";
 
-// // Feature data with icons
-// const features = [
-//   {
-//     id: 1,
-//     icon: FiCoffee,
-//     title: "Intuitive Order Taking",
-//     description:
-//       "Speed up service with our easy-to-use interface, minimizing errors and improving staff efficiency. Designed with real business workflows in mind.",
-//   },
-//   {
-//     id: 2,
-//     icon: FiHome,
-//     title: "Seamless Table Management",
-//     description:
-//       "Visually manage your floor plan, track table status, and optimize seating to maximize turns. Drag and drop interface makes adjustments simple.",
-//   },
-//   {
-//     id: 3,
-//     icon: FiPieChart,
-//     title: "Insightful Reporting",
-//     description:
-//       "Gain valuable insights into your sales, top-performing items, and staff performance with comprehensive, easy-to-understand reports and dashboards.",
-//   },
-//   {
-//     id: 4,
-//     icon: FiClock,
-//     title: "Kitchen Display System Integration",
-//     description:
-//       "Streamline communication between front-of-house and kitchen staff for faster, more accurate order fulfillment and reduced wait times.",
-//   },
-//   {
-//     id: 5,
-//     icon: FiCreditCard,
-//     title: "Flexible Payment Processing",
-//     description:
-//       "Accept all payment types including credit cards, mobile payments, and gift cards. Split checks, apply discounts, and manage tips with ease.",
-//   },
-//   {
-//     id: 6,
-//     icon: FiCloud,
-//     title: "Cloud-Based Management",
-//     description:
-//       "Access your data from anywhere. Make menu changes, view reports, and monitor performance remotely through our secure cloud platform.",
-//   },
-// ];
+const features = [
+  { id: 1, icon: FiCoffee, title: "Intuitive Order Taking", description: "Speed up service with our easy-to-use interface, minimizing errors and improving staff efficiency.", num: "01" },
+  { id: 2, icon: FiGrid, title: "Seamless Table Management", description: "Visually manage your floor plan, track table status, and optimize seating to maximize turns.", num: "02" },
+  { id: 3, icon: FiPieChart, title: "Insightful Reporting", description: "Gain valuable insights into your sales, top items, and staff performance with comprehensive dashboards.", num: "03" },
+  { id: 4, icon: FiClock, title: "Kitchen Display Integration", description: "Streamline front-of-house and kitchen communication for faster, more accurate order fulfillment.", num: "04" },
+  { id: 5, icon: FiCreditCard, title: "Flexible Payments", description: "Accept all payment types including credit cards, mobile payments, and gift cards with ease.", num: "05" },
+  { id: 6, icon: FiCloud, title: "Cloud-Based Management", description: "Access your data anywhere. Make menu changes, view reports, and monitor performance remotely.", num: "06" },
+];
 
-// // Testimonial data
-// const testimonials = [
-//   {
-//     id: 1,
-//     quote:
-//       "APOS Solutions has revolutionized how we manage orders. Our staff loves it, and our service speed has dramatically improved!",
-//     name: "Maria Chen",
-//     roleOrBusiness: "Owner, The Gourmet Spot",
-//     avatarPlaceholder: "MC",
-//   },
-//   {
-//     id: 2,
-//     quote:
-//       "The reporting features are a game-changer. I finally have a clear understanding of my business performance at my fingertips.",
-//     name: "David Miller",
-//     roleOrBusiness: "Manager, Brew & Bites Cafe",
-//     avatarPlaceholder: "DM",
-//   },
-//   {
-//     id: 3,
-//     quote:
-//       "Switching to APOS was seamless. The interface is incredibly intuitive, and the support team was fantastic.",
-//     name: "Aisha Khan",
-//     roleOrBusiness: "Chef & Owner, Spice Village",
-//     avatarPlaceholder: "AK",
-//   },
-//   {
-//     id: 4,
-//     quote:
-//       "Since implementing APOS, we've seen a 30% reduction in order errors and our customers are noticing the improved service quality.",
-//     name: "James Wilson",
-//     roleOrBusiness: "Operations Director, Urban Plate Group",
-//     avatarPlaceholder: "JW",
-//   },
-// ];
+const testimonials = [
+  { id: 1, quote: "APOS Solutions has revolutionized how we manage orders. Our staff loves it, and our service speed has dramatically improved!", name: "Maria Chen", business: "The Gourmet Spot", initials: "MC" },
+  { id: 2, quote: "The reporting features are a game-changer. I finally have a clear understanding of my business performance.", name: "David Miller", business: "Brew & Bites Cafe", initials: "DM" },
+  { id: 3, quote: "Switching to APOS was seamless. The interface is incredibly intuitive, and the support team was fantastic.", name: "Aisha Khan", business: "Spice Village", initials: "AK" },
+  { id: 4, quote: "Since implementing APOS, we've seen a 30% reduction in order errors and our customers are noticing the improved service.", name: "James Wilson", business: "Urban Plate Group", initials: "JW" },
+  { id: 5, quote: "The cloud management feature lets me monitor all three of my locations from anywhere. Absolute game-changer for growth.", name: "Sophie Brunner", business: "Alpine Bistro", initials: "SB" },
+  { id: 6, quote: "We cut our table turnover time by 20 minutes during peak hours. The kitchen display integration is flawless.", name: "Luca Fontana", business: "Lakeside Grill", initials: "LF" },
+];
 
-// // Animation variants
-// const fadeIn = {
-//   hidden: { opacity: 0, y: 20 },
-//   visible: {
-//     opacity: 1,
-//     y: 0,
-//     transition: { duration: 0.6, ease: "easeOut" },
-//   },
-// };
+const showcaseCards = [
+  { title: "Designed for Speed", desc: "Lightning-fast order processing that keeps up with your busiest hours. Our optimized interface responds in milliseconds." },
+  { title: "Built for Scale", desc: "From a single cafe to a multi-location empire. APOS grows with your ambitions, handling any volume effortlessly." },
+  { title: "Crafted for You", desc: "Fully customizable workflows, menus, and reports tailored to your unique operations and business model." },
+];
 
-// const staggerContainer = {
-//   hidden: { opacity: 0 },
-//   visible: {
-//     opacity: 1,
-//     transition: {
-//       staggerChildren: 0.1,
-//       delayChildren: 0.3,
-//     },
-//   },
-// };
+const partners = [
+  { name: "Sunmi", src: "/images/sunmi.png", label: "Hardware Partner" },
+  { name: "SoftPay", src: "/images/softpay.png", label: "SoftPOS Payment" },
+];
 
-// export default function Home() {
-//   // State for testimonial slider
-//   const [currentTestimonialIndex, setCurrentTestimonialIndex] =
-//     React.useState(0);
-
-//   // Testimonial navigation functions
-//   const goToNextTestimonial = () => {
-//     setCurrentTestimonialIndex((prevIndex) =>
-//       prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
-//     );
-//   };
-
-//   const goToPrevTestimonial = () => {
-//     setCurrentTestimonialIndex((prevIndex) =>
-//       prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
-//     );
-//   };
-
-//   const goToTestimonial = (index: number) => {
-//     setCurrentTestimonialIndex(index);
-//   };
-
-//   return (
-//     <>
-//       {/* Hero Section */}
-//       <section className="py-16 md:py-24 px-4 bg-white">
-//         <div className="container mx-auto px-4">
-//           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-//             {/* Text Content Column */}
-//             <motion.div
-//               className="w-full md:w-1/2"
-//               initial="hidden"
-//               animate="visible"
-//               variants={{
-//                 hidden: { opacity: 0 },
-//                 visible: {
-//                   opacity: 1,
-//                   transition: {
-//                     staggerChildren: 0.2,
-//                   },
-//                 },
-//               }}
-//             >
-//               {/* Animated Tagline */}
-//               <motion.p
-//                 className="text-lg text-[var(--color-primary)] font-semibold mb-4"
-//                 variants={fadeIn}
-//               >
-//                 All-Round Progressive Optimized Simple
-//               </motion.p>
-
-//               {/* Animated Headline */}
-//               <motion.h1
-//                 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)]"
-//                 variants={fadeIn}
-//               >
-//                 The Future of POS Management, Today
-//               </motion.h1>
-
-//               {/* Animated Sub-headline */}
-//               <motion.p
-//                 className="text-lg text-[var(--color-gray-600)] mt-4"
-//                 variants={fadeIn}
-//               >
-//                 Our intuitive Point of Sale system streamlines your operations
-//                 from order taking to payment processing, freeing you up to focus
-//                 on what matters most – your customers and the experience you
-//                 create.
-//               </motion.p>
-
-//               {/* Animated CTA Buttons */}
-//               <motion.div
-//                 className="mt-8 flex flex-wrap gap-4"
-//                 variants={fadeIn}
-//               >
-//                 <Link
-//                   href="#"
-//                   className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg shadow-md 
-//                           transition duration-300 ease-in-out transform hover:scale-105"
-//                 >
-//                   Explore Features
-//                 </Link>
-//                 <Link
-//                   href="/download"
-//                   className="border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold py-3 px-6 rounded-lg 
-//                           transition duration-300 ease-in-out"
-//                 >
-//                   See Demo
-//                 </Link>
-//               </motion.div>
-//             </motion.div>
-
-//             {/* Visual Element Column */}
-//             <motion.div
-//               className="w-full md:w-1/2 h-64 md:h-96 bg-[var(--color-primary-light)] rounded-xl flex items-center justify-center 
-//                        shadow-lg"
-//               initial={{ opacity: 0, y: 20 }}
-//               animate={{ opacity: 1, y: 0 }}
-//               transition={{ duration: 0.8, delay: 0.5 }}
-//             >
-//               <p className="text-[var(--color-primary)] text-center px-4">
-//                 Visual Placeholder: Future home for an image, illustration, or
-//                 short video of the POS in actions
-//               </p>
-//             </motion.div>
-//           </div>
-//         </div>
-//       </section>
-//       {/* Partners Section */}
-//       <section className="py-16 md:py-24 px-4 bg-white">
-//         <div className="container mx-auto px-4">
-//           {/* Section Title */}
-//           <motion.h2
-//             className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16 text-[var(--color-primary-dark)]"
-//             initial={{ opacity: 0, y: 20 }}
-//             whileInView={{ opacity: 1, y: 0 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6 }}
-//           >
-//             Our Official Partners
-//           </motion.h2>
-
-//           {/* Partners Grid */}
-//           <motion.div
-//             // className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-//             className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-//             initial={{ opacity: 0 }}
-//             whileInView={{ opacity: 1 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.7, delay: 0.2 }}
-//           >
-//             {/* Sunmi */}
-//             <motion.div
-//               className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] flex items-center justify-center"
-//               whileHover={{ y: -5 }}
-//             >
-//               <div className="text-center">
-//                 <div className="h-16 flex items-center justify-center mb-2">
-//                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-//                     <Image
-//                       src="/images/sunmi.png"
-//                       alt="Sunmi"
-//                       width={120}
-//                       height={60}
-//                       className="object-contain"
-//                     />
-//                   </span>
-//                 </div>
-//                 <p className="text-sm text-[var(--color-gray-600)]">
-//                   Hardware Partner
-//                 </p>
-//               </div>
-//             </motion.div>
-
-//             {/* SoftPay */}
-//             <motion.div
-//               className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] flex items-center justify-center"
-//               whileHover={{ y: -5 }}
-//             >
-//               <div className="text-center">
-//                 <div className="h-16 flex items-center justify-center mb-2">
-//                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-//                     <Image
-//                       src="/images/softpay.png"
-//                       alt="SoftPay"
-//                       width={120}
-//                       height={60}
-//                       className="object-contain"
-//                     />
-//                   </span>
-//                 </div>
-//                 <p className="text-sm text-[var(--color-gray-600)]">
-//                   SoftPOS Payment
-//                 </p>
-//               </div>
-//             </motion.div>
-
-//             {/* SwiPay */}
-//             {/* <motion.div
-//               className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] flex items-center justify-center"
-//               whileHover={{ y: -5 }}
-//             >
-//               <div className="text-center">
-//                 <div className="h-16 flex items-center justify-center mb-2">
-//                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-//                     <Image
-//                       src="/images/swipay.png"
-//                       alt="SwiPay"
-//                       width={120}
-//                       height={60}
-//                       className="object-contain"
-//                     />
-//                   </span>
-//                 </div>
-//                 <p className="text-sm text-[var(--color-gray-600)]">
-//                   Payment Solutions
-//                 </p>
-//               </div>
-//             </motion.div> */}
-
-//             {/* Elavon */}
-//             {/* <motion.div
-//               className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] flex items-center justify-center"
-//               whileHover={{ y: -5 }}
-//             >
-//               <div className="text-center">
-//                 <div className="h-16 flex items-center justify-center mb-2">
-//                   <span className="text-2xl font-bold text-[var(--color-primary)]">
-//                     <Image
-//                       src="/images/elavon.png"
-//                       alt="Elavon"
-//                       width={120}
-//                       height={60}
-//                       className="object-contain"
-//                     />
-//                   </span>
-//                 </div>
-//                 <p className="text-sm text-[var(--color-gray-600)]">
-//                   Payment Processing
-//                 </p>
-//               </div>
-//             </motion.div> */}
-//           </motion.div>
-
-//           {/* Partner Description */}
-//           <motion.p
-//             className="text-center text-[var(--color-gray-600)] mt-8 max-w-2xl mx-auto"
-//             initial={{ opacity: 0 }}
-//             whileInView={{ opacity: 1 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.7, delay: 0.4 }}
-//           >
-//             Working with industry-leading partners helps APOS become the
-//             All-Rounder solution for modern businesses, combining cutting-edge
-//             hardware with seamless payment processing.
-//           </motion.p>
-//         </div>
-//       </section>
-
-//       {/* Key Features Section */}
-//       <section className="py-16 md:py-24 px-4 bg-[var(--color-primary-light)]">
-//         <div className="container mx-auto px-4">
-//           {/* Section Title */}
-//           <motion.h2
-//             className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16 text-[var(--color-primary-dark)]"
-//             initial={{ opacity: 0, y: 20 }}
-//             whileInView={{ opacity: 1, y: 0 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6 }}
-//           >
-//             Everything Your Business Needs to Thrive
-//           </motion.h2>
-
-//           {/* Feature Cards Grid */}
-//           <motion.div
-//             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-//             variants={staggerContainer}
-//             initial="hidden"
-//             whileInView="visible"
-//             viewport={{ once: true }}
-//           >
-//             {features.map((feature) => (
-//               <motion.div
-//                 key={feature.id}
-//                 className="bg-white rounded-xl p-6 shadow-md border border-[var(--color-primary-light)] 
-//                           hover:border-[var(--color-primary)] hover:shadow-xl"
-//                 variants={fadeIn}
-//                 whileHover={{ y: -5 }}
-//               >
-//                 {/* Icon */}
-//                 <div className="w-12 h-12 bg-[var(--color-primary-light)] text-[var(--color-primary)] rounded-lg flex items-center justify-center mb-4 text-xl">
-//                   <feature.icon size={24} />
-//                 </div>
-
-//                 {/* Feature Title */}
-//                 <h3 className="text-xl font-semibold mb-2 text-[var(--color-primary-dark)]">
-//                   {feature.title}
-//                 </h3>
-
-//                 {/* Feature Description */}
-//                 <p className="text-[var(--color-gray-600)]">
-//                   {feature.description}
-//                 </p>
-//               </motion.div>
-//             ))}
-//           </motion.div>
-//         </div>
-//       </section>
-
-//       {/* Customer Testimonials Section */}
-//       <section className="py-16 md:py-24 px-4 bg-white">
-//         <div className="container mx-auto px-4">
-//           {/* Section Title */}
-//           <motion.h2
-//             className="text-3xl md:text-4xl font-bold text-center mb-12 md:mb-16 text-[var(--color-primary-dark)]"
-//             initial={{ opacity: 0, y: 20 }}
-//             whileInView={{ opacity: 1, y: 0 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6 }}
-//           >
-//             Trusted by Businesses Like Yours
-//           </motion.h2>
-
-//           {/* Testimonials Slider */}
-//           <motion.div
-//             className="relative mx-auto max-w-3xl"
-//             initial={{ opacity: 0 }}
-//             whileInView={{ opacity: 1 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.7 }}
-//           >
-//             {/* Testimonial Slides Container */}
-//             <div
-//               className="overflow-hidden rounded-xl"
-//               aria-live="polite"
-//               aria-roledescription="carousel"
-//             >
-//               <motion.div
-//                 className="flex"
-//                 animate={{ x: `-${currentTestimonialIndex * 100}%` }}
-//                 transition={{ duration: 0.5, ease: "easeInOut" }}
-//               >
-//                 {testimonials.map((testimonial) => (
-//                   <div
-//                     key={testimonial.id}
-//                     className="w-full flex-shrink-0 px-4 py-8 md:py-12"
-//                     aria-roledescription="slide"
-//                   >
-//                     <motion.div
-//                       className="bg-[var(--color-primary-light)] rounded-xl p-6 md:p-8 shadow-md"
-//                       whileHover={{ y: -5 }}
-//                       transition={{ duration: 0.3 }}
-//                     >
-//                       {/* Quote Icon */}
-//                       <div className="text-[var(--color-primary)] text-4xl mb-4">
-//                         ☺
-//                       </div>
-
-//                       {/* Testimonial Text */}
-//                       <p className="text-lg text-[var(--color-gray-800)] italic">
-//                         {testimonial.quote}
-//                       </p>
-
-//                       {/* Customer Info */}
-//                       <div className="mt-6 flex items-center">
-//                         {/* Avatar Placeholder */}
-//                         <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-sm mr-3">
-//                           {testimonial.avatarPlaceholder}
-//                         </div>
-
-//                         <div>
-//                           <p className="font-semibold text-[var(--color-primary-dark)]">
-//                             {testimonial.name}
-//                           </p>
-//                           <p className="text-sm text-[var(--color-gray-600)]">
-//                             {testimonial.roleOrBusiness}
-//                           </p>
-//                         </div>
-//                       </div>
-//                     </motion.div>
-//                   </div>
-//                 ))}
-//               </motion.div>
-//             </div>
-
-//             {/* Navigation Arrows */}
-//             <motion.button
-//               type="button"
-//               onClick={goToPrevTestimonial}
-//               className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-4 md:-translate-x-8 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-[var(--color-primary-light)] transition-colors duration-300"
-//               aria-label="Previous testimonial"
-//               whileHover={{ scale: 1.1 }}
-//               whileTap={{ scale: 0.95 }}
-//             >
-//               <svg
-//                 xmlns="http://www.w3.org/2000/svg"
-//                 width="24"
-//                 height="24"
-//                 viewBox="0 0 24 24"
-//                 fill="none"
-//                 stroke="currentColor"
-//                 strokeWidth="2"
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 className="text-[var(--color-primary)]"
-//               >
-//                 <path d="M15 18l-6-6 6-6" />
-//               </svg>
-//             </motion.button>
-
-//             <motion.button
-//               type="button"
-//               onClick={goToNextTestimonial}
-//               className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-4 md:translate-x-8 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-[var(--color-primary-light)] transition-colors duration-300"
-//               aria-label="Next testimonial"
-//               whileHover={{ scale: 1.1 }}
-//               whileTap={{ scale: 0.95 }}
-//             >
-//               <svg
-//                 xmlns="http://www.w3.org/2000/svg"
-//                 width="24"
-//                 height="24"
-//                 viewBox="0 0 24 24"
-//                 fill="none"
-//                 stroke="currentColor"
-//                 strokeWidth="2"
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 className="text-[var(--color-primary)]"
-//               >
-//                 <path d="M9 18l6-6-6-6" />
-//               </svg>
-//             </motion.button>
-
-//             {/* Dot Indicators */}
-//             <div className="flex justify-center space-x-2 mt-8">
-//               {testimonials.map((_, index) => (
-//                 <motion.button
-//                   key={index}
-//                   type="button"
-//                   onClick={() => goToTestimonial(index)}
-//                   className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 
-//                     ${
-//                       currentTestimonialIndex === index
-//                         ? "bg-[var(--color-primary)]"
-//                         : "bg-[var(--color-gray-300)] hover:bg-[var(--color-gray-400)]"
-//                     }`}
-//                   aria-label={`Go to testimonial ${index + 1}`}
-//                   aria-current={
-//                     currentTestimonialIndex === index ? "true" : "false"
-//                   }
-//                   whileHover={{ scale: 1.2 }}
-//                   whileTap={{ scale: 0.9 }}
-//                 />
-//               ))}
-//             </div>
-//           </motion.div>
-//         </div>
-//       </section>
-
-//       {/* Call to Action Section */}
-//       <section className="py-16 md:py-24 px-4 bg-[var(--color-primary)] text-white">
-//         <div className="container mx-auto px-4 text-center">
-//           {/* CTA Headline */}
-//           <motion.h2
-//             className="text-3xl md:text-4xl font-bold mb-6"
-//             initial={{ opacity: 0, y: 20 }}
-//             whileInView={{ opacity: 1, y: 0 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6 }}
-//           >
-//             Ready to Transform Your Business Operations?
-//           </motion.h2>
-
-//           {/* Supporting Text */}
-//           <motion.p
-//             className="text-lg opacity-90 max-w-2xl mx-auto"
-//             initial={{ opacity: 0, y: 20 }}
-//             whileInView={{ opacity: 1, y: 0 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6, delay: 0.2 }}
-//           >
-//             Join hundreds of successful businesses already thriving with APOS.
-//             Start today and see the difference in your efficiency, customer
-//             satisfaction, and bottom line.
-//           </motion.p>
-
-//           {/* CTA Buttons */}
-//           <motion.div
-//             className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
-//             initial={{ opacity: 0, y: 20 }}
-//             whileInView={{ opacity: 1, y: 0 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6, delay: 0.4 }}
-//           >
-//             {/* Primary CTA Button with Animation */}
-//             <motion.div
-//               whileHover={{ scale: 1.05 }}
-//               whileTap={{ scale: 0.98 }}
-//               animate={{ scale: [1, 1.03, 1] }}
-//               transition={{
-//                 repeat: Infinity,
-//                 repeatType: "mirror",
-//                 duration: 2,
-//               }}
-//             >
-//               <Link
-//                 href="/download"
-//                 className="bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-bold py-4 px-8 rounded-lg shadow-lg text-lg 
-//                           transition duration-300 ease-in-out"
-//               >
-//                 Request a Free Demo
-//               </Link>
-//             </motion.div>
-
-//             {/* Secondary CTA Button */}
-//             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-//               <Link
-//                 href="/contact"
-//                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[var(--color-primary)] 
-//                           font-bold py-4 px-8 rounded-lg text-lg transition duration-300 ease-in-out"
-//               >
-//                 Contact Sales
-//               </Link>
-//             </motion.div>
-//           </motion.div>
-
-//           {/* Additional Trust Element */}
-//           <motion.p
-//             className="mt-8 text-sm opacity-90"
-//             initial={{ opacity: 0 }}
-//             whileInView={{ opacity: 1 }}
-//             viewport={{ once: true }}
-//             transition={{ duration: 0.6, delay: 0.6 }}
-//           >
-//             No credit card required • Free 14-day trial • Cancel anytime
-//           </motion.p>
-//         </div>
-//       </section>
-//     </>
-//   );
-// }
+function StatCounter({ target, suffix, label, decimals }: { target: number; suffix: string; label: string; decimals?: number }) {
+  const ref = useCountUp(target, { suffix, decimals });
+  return (
+    <div className="text-center">
+      <span
+        ref={ref}
+        className="text-6xl md:text-8xl font-bold text-[var(--color-accent)] text-glow"
+        style={{ fontFamily: "var(--font-playfair), serif" }}
+      >
+        0
+      </span>
+      <p className="mt-4 text-sm uppercase tracking-[0.2em] text-[var(--color-text-on-dark-muted)]">
+        {label}
+      </p>
+    </div>
+  );
+}
 
 export default function Home() {
-return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <motion.div
-        className="text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Logo */}
-        <motion.div
-          className="mb-8"
-          initial={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Image
-      src="/images/APOS_Logo_4f.png"
-      alt="APOS Logo"
-      width={200}
-      height={200}
-      className="mx-auto"
-      priority
-    />
-        </motion.div>
+  const heroRef = useRef<HTMLElement>(null);
 
-        {/* Coming Soon Text */}
-        <motion.h1
-          className="text-4xl md:text-6xl font-bold text-[var(--color-primary-dark)] mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          Coming Soon
-        </motion.h1>
+  // Hero CTA + scroll indicator animation
+  useGSAP(() => {
+    if (!heroRef.current) return;
+    const tl = gsap.timeline({ delay: 1.2 });
+    tl.from(".hero-cta", { opacity: 0, y: 20, stagger: 0.1, duration: 0.5, ease: "power3.out" })
+      .from(".hero-scroll", { opacity: 0, y: -10, duration: 0.5 }, "-=0.2");
+  }, { scope: heroRef });
 
+  return (
+    <>
+      {/* ═════ HERO — Dark, full viewport ═════ */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--color-bg-dark)]">
+        {/* Decorative blurred accent shapes */}
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[var(--color-accent)]/[0.04] rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[var(--color-accent)]/[0.03] rounded-full blur-[100px]" />
 
-      </motion.div>
-    </div>
+        <div className="container mx-auto px-6 relative z-10 text-center pt-24 pb-20">
+          <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-accent)] font-medium mb-8 opacity-0 animate-[fadeIn_0.6s_0.2s_forwards]">
+            All-Round Progressive Optimized Simple
+          </p>
+
+          <ScatteredText
+            text="The Future of POS Management"
+            tag="h1"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.02] tracking-tight max-w-5xl mx-auto text-white"
+            scrub={false}
+            delay={0.3}
+          />
+
+          <div className="mt-8 max-w-xl mx-auto">
+            <TextLineReveal
+              tag="p"
+              className="text-lg md:text-xl text-[var(--color-text-on-dark-secondary)] leading-relaxed"
+              delay={0.8}
+            >
+              Streamline operations from order to payment. Intuitive, fast, and built for modern restaurants.
+            </TextLineReveal>
+          </div>
+
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/solutions"
+              className="hero-cta inline-flex items-center px-8 py-4 rounded-full bg-[var(--color-accent)] text-white font-semibold text-sm hover:bg-[var(--color-accent-dark)] transition-all duration-300 hover:shadow-[0_0_30px_var(--color-accent-glow)]"
+            >
+              Explore Features
+            </Link>
+            <Link
+              href="/download"
+              className="hero-cta inline-flex items-center px-8 py-4 rounded-full border border-[var(--color-border-dark)] text-white font-semibold text-sm hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-300"
+            >
+              Download Now
+            </Link>
+          </div>
+
+          {/* Scroll indicator */}
+          <div className="hero-scroll mt-20 flex flex-col items-center gap-2">
+            <span className="text-xs uppercase tracking-widest text-[var(--color-text-on-dark-muted)]">Scroll</span>
+            <div className="w-px h-8 bg-gradient-to-b from-[var(--color-text-on-dark-muted)] to-transparent" />
+          </div>
+        </div>
+
+        {/* Bottom ticker */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <InfiniteTextTicker
+            text="ORDER · MANAGE · ANALYZE · GROW"
+            className="text-6xl md:text-8xl font-bold text-outline text-white/10 py-4"
+            speed={40}
+          />
+        </div>
+      </section>
+
+      {/* ═════ PARTNERS — Dark, seamless with hero ═════ */}
+      <section className="py-12 bg-[var(--color-bg-dark)]">
+        <div className="flex items-center justify-center gap-16 md:gap-24 flex-wrap px-6">
+          {partners.map((partner) => (
+            <div key={partner.name} className="flex flex-col items-center gap-2">
+              <div className="h-10 flex items-center grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                <Image src={partner.src} alt={partner.name} width={100} height={50} className="object-contain" />
+              </div>
+              <span className="text-[10px] text-[var(--color-text-on-dark-muted)] uppercase tracking-wider">{partner.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═════ FEATURES — Light bg, horizontal scroll ═════ */}
+      <section className="bg-[var(--color-bg-light)]">
+        <div className="py-24 md:py-32">
+          <div className="container mx-auto px-6 mb-12">
+            <ScatteredText
+              text="Everything Your Business Needs"
+              tag="h2"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-center text-[var(--color-text-on-light)]"
+            />
+            <div className="mt-4 text-center">
+              <TextLineReveal tag="p" className="text-[var(--color-text-on-light-secondary)] max-w-2xl mx-auto text-lg">
+                Powerful features designed for the modern restaurant experience.
+              </TextLineReveal>
+            </div>
+          </div>
+
+          <HorizontalScrollSection className="min-h-[70vh]">
+            {features.map((feature) => (
+              <div key={feature.id} className="w-screen md:w-screen h-full flex items-center justify-center px-6 md:px-16">
+                <div className="max-w-lg">
+                  <span className="text-8xl font-bold text-outline text-[var(--color-text-on-light)]/10 block mb-6">
+                    {feature.num}
+                  </span>
+                  <div className="w-14 h-14 rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] flex items-center justify-center mb-6">
+                    <feature.icon size={26} />
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-[var(--color-text-on-light)] mb-4">
+                    {feature.title}
+                  </h3>
+                  <p className="text-lg text-[var(--color-text-on-light-secondary)] leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </HorizontalScrollSection>
+        </div>
+      </section>
+
+      {/* ═════ SHOWCASE — Dark bg, stacking cards ═════ */}
+      <section className="py-24 md:py-32 bg-[var(--color-bg-dark)]">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <ScatteredText
+              text="See It in Action"
+              tag="h2"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-white"
+            />
+          </div>
+
+          <StackingCards
+            cards={showcaseCards.map((card, i) => ({
+              key: `showcase-${i}`,
+              content: (
+                <div className="card-dark p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                  <ImageClipReveal direction={i % 2 === 0 ? "left" : "right"} className="w-full md:w-1/2">
+                    <div className="aspect-video rounded-xl bg-[var(--color-bg-dark-secondary)] flex items-center justify-center">
+                      <span className="text-[var(--color-text-on-dark-muted)] text-sm">{card.title} Visual</span>
+                    </div>
+                  </ImageClipReveal>
+                  <div className="w-full md:w-1/2">
+                    <span className="text-7xl font-bold text-outline text-white/10 block mb-4">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                      {card.title}
+                    </h3>
+                    <p className="text-[var(--color-text-on-dark-secondary)] leading-relaxed text-lg">
+                      {card.desc}
+                    </p>
+                  </div>
+                </div>
+              ),
+            }))}
+          />
+        </div>
+      </section>
+
+      {/* ═════ STATS — Dark bg, large accent numbers ═════ */}
+      <section className="py-24 md:py-32 bg-[var(--color-bg-dark)] relative overflow-hidden">
+        {/* Decorative grid pattern */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.03]" />
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8">
+            <StatCounter target={500} suffix="+" label="Restaurants" />
+            <StatCounter target={99.9} suffix="%" label="Uptime" decimals={1} />
+            <StatCounter target={30} suffix="%" label="Faster Service" />
+          </div>
+        </div>
+      </section>
+
+      {/* ═════ TESTIMONIALS — Light bg, card fan ═════ */}
+      <section className="py-24 md:py-32 bg-[var(--color-bg-light)]">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <ScatteredText
+              text="Trusted by Businesses Like Yours"
+              tag="h2"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-[var(--color-text-on-light)]"
+            />
+          </div>
+
+          <TestimonialCardFan cards={testimonials} />
+        </div>
+      </section>
+
+      {/* ═════ CTA — Dark bg, spotlight reveal ═════ */}
+      <section className="min-h-screen flex items-center justify-center bg-[var(--color-bg-dark)] relative">
+        <SpotlightReveal spotlightSize={300} className="w-full min-h-screen flex items-center justify-center">
+          <div className="container mx-auto px-6 text-center py-24">
+            <TextLineReveal
+              tag="h2"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-white max-w-2xl mx-auto"
+            >
+              Ready to Transform Your Business?
+            </TextLineReveal>
+            <div className="mt-6">
+              <TextLineReveal
+                tag="p"
+                className="text-lg text-[var(--color-text-on-dark-secondary)] max-w-xl mx-auto leading-relaxed"
+                delay={0.3}
+              >
+                Join hundreds of successful businesses already thriving with APOS.
+              </TextLineReveal>
+            </div>
+            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/download"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[var(--color-accent)] text-white font-semibold hover:bg-[var(--color-accent-dark)] transition-all duration-300 hover:shadow-[0_0_30px_var(--color-accent-glow)]"
+              >
+                Request a Free Demo
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full border border-[var(--color-border-dark)] text-white font-semibold hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-300"
+              >
+                Contact Sales
+              </Link>
+            </div>
+            <p className="mt-8 text-sm text-[var(--color-text-on-dark-muted)]">
+              No credit card required &bull; Free 14-day trial &bull; Cancel anytime
+            </p>
+          </div>
+        </SpotlightReveal>
+      </section>
+    </>
   );
 }

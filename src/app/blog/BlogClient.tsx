@@ -1,8 +1,13 @@
 "use client";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import Link from "next/link";
 import { formatDate } from "../../../lib/posts-utils";
 import type { PostMetadata } from "../../../lib/posts-utils";
+import ScatteredText from "@/components/ui/ScatteredText";
+import TextLineReveal from "@/components/ui/TextLineReveal";
+import ImageClipReveal from "@/components/ui/ImageClipReveal";
 
 // Define the props for the client component
 interface BlogClientProps {
@@ -10,118 +15,119 @@ interface BlogClientProps {
 }
 
 export default function BlogClient({ posts }: BlogClientProps) {
-  // Animation variants
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+  // Staggered card reveal on scroll
+  useGSAP(
+    () => {
+      if (!gridRef.current) return;
+
+      gsap.from(".blog-card", {
+        opacity: 0,
+        y: 40,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 85%",
+          once: true,
+        },
+      });
     },
-  };
+    { scope: gridRef }
+  );
+
+  // Empty state animation
+  useGSAP(
+    () => {
+      if (!sectionRef.current || posts.length > 0) return;
+
+      gsap.from(".blog-empty", {
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+      });
+    },
+    { scope: sectionRef }
+  );
 
   return (
-    <div className="container mx-auto px-6 py-16 md:py-24 bg-white">
-      {/* Page Title */}
-      <motion.h1
-        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        Latest Articles & Insights
-      </motion.h1>
+    <div ref={sectionRef} className="min-h-screen bg-[var(--color-bg-light)]">
+      <div className="container mx-auto px-6 pt-28 md:pt-32 pb-16 md:pb-24">
+        {/* Page Title */}
+        <ScatteredText
+          text="Latest Articles & Insights"
+          tag="h1"
+          className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-text-on-light)] font-[family-name:var(--font-display)]"
+          scrub={false}
+          delay={0.3}
+        />
 
-      {/* Introduction */}
-      <motion.p
-        className="text-lg text-[var(--color-gray-600)] text-center mb-12 md:mb-16 max-w-2xl mx-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: 0.2 }}
-      >
-        Discover the latest trends, tips, and industry insights from the APOS
-        Solutions team to help your business thrive.
-      </motion.p>
+        {/* Introduction */}
+        <TextLineReveal
+          tag="p"
+          className="text-lg text-[var(--color-text-on-light-secondary)] text-center mb-12 md:mb-16 max-w-2xl mx-auto"
+          delay={0.5}
+        >
+          Discover the latest trends, tips, and industry insights from the APOS
+          Solutions team to help your business thrive.
+        </TextLineReveal>
 
-      {/* Posts Grid */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-      >
-        {posts.map((post) => (
-          <motion.article
-            key={post.slug}
-            variants={cardVariants}
-            whileHover={{ y: -10, transition: { duration: 0.3 } }}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full border border-[var(--color-primary-light)]"
-          >
-            {/* Featured Image */}
-            <div className="relative h-48 w-full overflow-hidden">
-              <div className="absolute inset-0 bg-[var(--color-primary-light)] flex items-center justify-center text-[var(--color-primary)]">
-                {/* This is a placeholder. In a real implementation, you would use the Image component with the actual image */}
-                <p className="text-center p-4">Featured Image Placeholder</p>
-                {/* Uncomment when you have actual images:
-                <Image
-                  src={post.featuredImage}
-                  alt={post.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority={index < 6}
-                />
-                */}
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-6 flex-grow flex flex-col">
-              {/* Date */}
-              <p className="text-sm text-[var(--color-primary)] mb-2">
-                {formatDate(post.date)}
-              </p>
-
-              {/* Title */}
-              <h2 className="text-xl font-bold mb-3 text-[var(--color-primary-dark)] hover:text-[var(--color-primary)] transition-colors duration-200">
-                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-              </h2>
-
-              {/* Excerpt */}
-              <p className="text-[var(--color-gray-600)] mb-4 flex-grow">
-                {post.excerpt}
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center mt-auto">
-                <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center font-bold text-sm mr-3">
-                  {post.author.charAt(0)}
+        {/* Posts Grid */}
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {posts.map((post, index) => (
+            <article
+              key={post.slug}
+              className="blog-card card-light overflow-hidden flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-lg"
+            >
+              {/* Featured Image */}
+              <ImageClipReveal
+                direction="bottom"
+                className="relative h-48 w-full"
+                delay={index * 0.1}
+              >
+                <div className="absolute inset-0 bg-[var(--color-bg-light-secondary)] flex items-center justify-center text-[var(--color-text-on-light-muted)]">
+                  <p className="text-center p-4">Featured Image Placeholder</p>
                 </div>
-                <span className="text-sm text-[var(--color-gray-600)]">
-                  {post.author}
-                </span>
-              </div>
+              </ImageClipReveal>
 
-              {/* Read More Link */}
-              <div className="mt-4 pt-4 border-t border-[var(--color-primary-light)]">
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
+              {/* Content */}
+              <div className="p-6 flex-grow flex flex-col">
+                {/* Date */}
+                <p className="text-sm text-[var(--color-accent)] mb-2">
+                  {formatDate(post.date)}
+                </p>
+
+                {/* Title */}
+                <h2 className="text-xl font-bold mb-3 text-[var(--color-text-on-light)] hover:text-[var(--color-accent)] transition-colors duration-200">
+                  <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                </h2>
+
+                {/* Excerpt */}
+                <p className="text-[var(--color-text-on-light-secondary)] mb-4 flex-grow">
+                  {post.excerpt}
+                </p>
+
+                {/* Author */}
+                <div className="flex items-center mt-auto">
+                  <div className="w-8 h-8 rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] flex items-center justify-center font-bold text-sm mr-3">
+                    {post.author.charAt(0)}
+                  </div>
+                  <span className="text-sm text-[var(--color-text-on-light-secondary)]">
+                    {post.author}
+                  </span>
+                </div>
+
+                {/* Read More Link */}
+                <div className="mt-4 pt-4 border-t border-[var(--color-border-light)]">
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="inline-flex items-center text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
+                    className="inline-flex items-center text-[var(--color-accent)] hover:text-[var(--color-accent-dark)] font-medium transition-transform duration-200 hover:translate-x-1"
                   >
                     Read More
                     <svg
@@ -139,26 +145,21 @@ export default function BlogClient({ posts }: BlogClientProps) {
                       />
                     </svg>
                   </Link>
-                </motion.div>
+                </div>
               </div>
-            </div>
-          </motion.article>
-        ))}
-      </motion.div>
+            </article>
+          ))}
+        </div>
 
-      {/* No Posts Message (shown if there are no posts) */}
-      {posts.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7 }}
-          className="text-center py-12 bg-[var(--color-primary-light)] rounded-lg"
-        >
-          <p className="text-lg text-[var(--color-gray-600)]">
-            No blog posts available yet. Check back soon for new content!
-          </p>
-        </motion.div>
-      )}
+        {/* No Posts Message (shown if there are no posts) */}
+        {posts.length === 0 && (
+          <div className="blog-empty text-center py-12 card-light">
+            <p className="text-lg text-[var(--color-text-on-light-secondary)]">
+              No blog posts available yet. Check back soon for new content!
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

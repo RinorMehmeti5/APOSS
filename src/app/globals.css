@@ -1,37 +1,136 @@
 @import "tailwindcss";
 
 :root {
-  /* Theme colors - dynamically set by ThemeContext */
-  --color-primary: #0055ff;
-  --color-primary-light: #e6f0ff;
-  --color-primary-dark: #0044cc;
+  /* ── Dark sections (hero, showcases, CTA) ── */
+  --color-bg-dark: #0A0A0A;
+  --color-bg-dark-secondary: #111111;
+  --color-bg-dark-elevated: #1A1A1A;
 
-  /* Keep these the same */
-  --color-white: #ffffff;
-  --color-black: #121212;
-  --color-gray-100: #f8f9fa;
-  --color-gray-200: #e9ecef;
-  --color-gray-300: #dee2e6;
-  --color-gray-600: #6c757d;
-  --color-gray-800: #343a40;
+  /* ── Light sections (features, forms, blog, legal) ── */
+  --color-bg-light: #F7F7F5;
+  --color-bg-light-secondary: #EEEEEB;
+  --color-bg-light-elevated: #FFFFFF;
+
+  /* ── Accent (electric blue) — dynamically set by ThemeContext ── */
+  --color-accent: #3B82F6;
+  --color-accent-light: #60A5FA;
+  --color-accent-dark: #2563EB;
+  --color-accent-glow: rgba(59, 130, 246, 0.15);
+
+  /* ── Text on dark backgrounds ── */
+  --color-text-on-dark: #F5F5F5;
+  --color-text-on-dark-secondary: #A0A0A0;
+  --color-text-on-dark-muted: #666666;
+
+  /* ── Text on light backgrounds ── */
+  --color-text-on-light: #1A1A1A;
+  --color-text-on-light-secondary: #555555;
+  --color-text-on-light-muted: #888888;
+
+  /* ── Borders ── */
+  --color-border-dark: #222222;
+  --color-border-light: #E0E0DD;
 }
 
 @theme inline {
-  --color-background: var(--color-white);
-  --color-foreground: var(--color-black);
+  --color-background: var(--color-bg-dark);
+  --color-foreground: var(--color-text-on-dark);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--color-black);
-    --color-foreground: var(--color-white);
-  }
+/* ── Selection ── */
+::selection {
+  background: var(--color-accent);
+  color: #FFFFFF;
+}
+
+/* ── Scrollbar (dark) ── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--color-bg-dark);
+  color: var(--color-text-on-dark);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Text utilities ── */
+.text-glow {
+  text-shadow: 0 0 40px var(--color-accent-glow), 0 0 80px var(--color-accent-glow);
+}
+
+.text-outline {
+  -webkit-text-stroke: 1.5px currentColor;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-accent {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow utilities ── */
+.accent-glow {
+  box-shadow: 0 0 30px var(--color-accent-glow), 0 0 60px var(--color-accent-glow);
+}
+
+.accent-glow-sm {
+  box-shadow: 0 0 15px var(--color-accent-glow);
+}
+
+/* ── Card utilities ── */
+.card-dark {
+  background: var(--color-bg-dark-elevated);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 16px;
+}
+
+.card-light {
+  background: var(--color-bg-light-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Split-type support ── */
+.split-parent .word,
+.split-parent .char,
+.split-parent .line {
+  display: inline-block;
+}
+
+.line-mask {
+  overflow: hidden;
+  display: block;
+}
+
+/* ── Smooth clip-path transitions ── */
+.clip-hidden-left { clip-path: inset(0 100% 0 0); }
+.clip-hidden-right { clip-path: inset(0 0 0 100%); }
+.clip-hidden-bottom { clip-path: inset(100% 0 0 0); }
+.clip-hidden-center { clip-path: inset(50% 50% 50% 50%); }
+.clip-visible { clip-path: inset(0 0 0 0); }
+
+/* ── Grid pattern (decorative bg) ── */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(var(--color-border-dark) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border-dark) 1px, transparent 1px);
+  background-size: 60px 60px;
 }

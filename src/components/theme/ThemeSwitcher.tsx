@@ -1,116 +1,92 @@
 "use client";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
+import { gsap } from "@/lib/gsap";
 import { FiSettings, FiCheck } from "react-icons/fi";
 import { useTheme, themes } from "./ThemeContext";
 
 export default function ThemeSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const { currentThemeIndex, setTheme } = useTheme();
+  const popupRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle theme selection
   const handleThemeSelect = (index: number) => {
     setTheme(index);
-    // Close the popup after a small delay
     setTimeout(() => setIsOpen(false), 300);
   };
 
-  // Animation variants
-  const containerVariants = {
-    closed: {
-      opacity: 0,
-      y: 20,
-      scale: 0.8,
-      transition: { duration: 0.3, ease: "easeInOut" },
-    },
-    open: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
-  const buttonVariants = {
-    rest: { scale: 1 },
-    hover: { scale: 1.1, rotate: 15, transition: { duration: 0.3 } },
-    tap: { scale: 0.9 },
-  };
-
-  const themeOptionVariants = {
-    rest: { x: 0 },
-    hover: { x: 5, transition: { duration: 0.2 } },
-    tap: { scale: 0.98 },
-  };
+  useEffect(() => {
+    if (!popupRef.current) return;
+    if (isOpen) {
+      gsap.set(popupRef.current, { display: "block" });
+      gsap.fromTo(popupRef.current,
+        { opacity: 0, y: 20, scale: 0.8 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: "back.out(1.7)" }
+      );
+      const options = popupRef.current.querySelectorAll(".theme-option");
+      gsap.fromTo(options,
+        { opacity: 0, x: -10 },
+        { opacity: 1, x: 0, duration: 0.25, stagger: 0.04, ease: "power3.out", delay: 0.1 }
+      );
+    } else {
+      gsap.to(popupRef.current, {
+        opacity: 0, y: 20, scale: 0.8, duration: 0.25, ease: "power2.in",
+        onComplete: () => {
+          if (popupRef.current) gsap.set(popupRef.current, { display: "none" });
+        }
+      });
+    }
+  }, [isOpen]);
 
   return (
     <div className="fixed left-6 bottom-6 z-50">
-      {/* Theme Switcher Button */}
-      <motion.button
-        className="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white shadow-lg flex items-center justify-center"
+      <button
+        ref={buttonRef}
+        className="w-12 h-12 rounded-full bg-[var(--color-bg-dark-elevated)] border border-[var(--color-border-dark)] text-[var(--color-accent)] shadow-lg flex items-center justify-center hover:border-[var(--color-accent)] transition-colors duration-300"
         onClick={() => setIsOpen(!isOpen)}
-        variants={buttonVariants}
-        initial="rest"
-        whileHover="hover"
-        whileTap="tap"
-        aria-label="Change theme"
+        aria-label="Change accent color"
       >
         <FiSettings className="w-5 h-5" />
-      </motion.button>
+      </button>
 
-      {/* Theme Options Popup */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="absolute left-0 bottom-16 bg-white rounded-lg shadow-xl p-4 w-64 border border-[var(--color-primary-light)]"
-            variants={containerVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-          >
-            <h3 className="text-[var(--color-primary-dark)] font-semibold mb-3 text-center">
-              Choose a Theme
-            </h3>
-            <div className="space-y-2">
-              {themes.map((theme, index) => (
-                <motion.button
-                  key={theme.name}
-                  className={`w-full flex items-center p-2 rounded-md transition-colors ${
-                    currentThemeIndex === index
-                      ? "bg-[var(--color-primary-light)]"
-                      : "hover:bg-[var(--color-gray-100)]"
-                  }`}
-                  onClick={() => handleThemeSelect(index)}
-                  variants={themeOptionVariants}
-                  initial="rest"
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <div
-                    className="w-8 h-8 rounded-full mr-3 flex items-center justify-center text-lg"
-                    style={{
-                      backgroundColor: theme.primaryLight,
-                      color: theme.primary,
-                    }}
-                  >
-                    {theme.icon}
-                  </div>
-                  <span className="flex-grow text-left text-[var(--color-gray-800)]">
-                    {theme.name}
-                  </span>
-                  {currentThemeIndex === index && (
-                    <FiCheck className="w-5 h-5 text-[var(--color-primary)]" />
-                  )}
-                </motion.button>
-              ))}
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-[var(--color-gray-200)] text-center text-xs text-[var(--color-gray-600)]">
-              Theme changes will persist across sessions
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div
+        ref={popupRef}
+        className="absolute left-0 bottom-16 bg-[var(--color-bg-dark-elevated)] rounded-xl shadow-2xl p-4 w-56 border border-[var(--color-border-dark)] hidden"
+      >
+        <h3 className="text-[var(--color-text-on-dark)] font-semibold mb-3 text-sm text-center">
+          Accent Color
+        </h3>
+        <div className="space-y-1">
+          {themes.map((theme, index) => (
+            <button
+              key={theme.name}
+              className={`theme-option w-full flex items-center p-2.5 rounded-lg transition-colors duration-200 ${
+                currentThemeIndex === index
+                  ? "bg-[var(--color-accent)]/10"
+                  : "hover:bg-white/5"
+              }`}
+              onClick={() => handleThemeSelect(index)}
+            >
+              <div
+                className="w-6 h-6 rounded-full mr-3 border-2"
+                style={{
+                  backgroundColor: theme.accent,
+                  borderColor: currentThemeIndex === index ? theme.accent : "transparent",
+                }}
+              />
+              <span className="flex-grow text-left text-sm text-[var(--color-text-on-dark-muted)]">
+                {theme.name}
+              </span>
+              {currentThemeIndex === index && (
+                <FiCheck className="w-4 h-4 text-[var(--color-accent)]" />
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 pt-3 border-t border-[var(--color-border-dark)] text-center text-xs text-[var(--color-text-on-dark-muted)]">
+          Persists across sessions
+        </div>
+      </div>
     </div>
   );
 }

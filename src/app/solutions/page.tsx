@@ -1,837 +1,309 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import ScatteredText from "@/components/ui/ScatteredText";
+import TextLineReveal from "@/components/ui/TextLineReveal";
+import MouseFollowImage from "@/components/ui/MouseFollowImage";
+import StackingCards from "@/components/ui/StackingCards";
+import ImageClipReveal from "@/components/ui/ImageClipReveal";
+import SpotlightReveal from "@/components/ui/SpotlightReveal";
+
+/* ───────── Solution data ───────── */
+
+interface SolutionSection {
+  title: string;
+  description: string;
+  features: string[];
+  label: string;
+}
+
+const sections: SolutionSection[] = [
+  {
+    title: "Intuitive Workflow & Service Management",
+    description:
+      "Empower your team with a lightning-fast, intuitive system that reduces training time and minimizes errors. Our customizable service and product management tools adapt to your business\u2019s unique needs, from simple projects to complex enterprise solutions.",
+    features: [
+      "Customizable service catalogs",
+      "Drag-and-drop editing",
+      "Quick-add tasks & packages",
+      "Smart search with voice",
+      "Automated compliance alerts",
+      "Lifecycle management",
+    ],
+    label: "Order Management",
+  },
+  {
+    title: "Dynamic Resource & Asset Coordination",
+    description:
+      "Optimize your business\u2019s resources and assets with our intuitive visual interface. Track asset status in real-time, manage bookings, and maximize utilization efficiency to increase throughput and revenue.",
+    features: [
+      "Drag-and-drop scheduling",
+      "Color-coded status indicators",
+      "Integrated booking system",
+      "Usage timer tracking",
+      "Team workload balancing",
+      "Conflict management",
+    ],
+    label: "Resource Planning",
+  },
+  {
+    title: "Real-time Reporting & Analytics",
+    description:
+      "Gain powerful insights into your business\u2019s performance with our comprehensive reporting and analytics tools. Make data-driven decisions with customizable dashboards that highlight key metrics and trends in real-time.",
+    features: [
+      "Custom KPI dashboards",
+      "Sales & revenue analysis",
+      "Labor cost reporting",
+      "Inventory tracking",
+      "Automated email reports",
+      "Trend visualization",
+    ],
+    label: "Analytics Dashboard",
+  },
+  {
+    title: "Team & Workflow Synchronization",
+    description:
+      "Streamline communication between your front-line and back-end teams with our robust synchronization system. Eliminate paper trails, reduce errors, and optimize task completion times for faster service and higher client satisfaction.",
+    features: [
+      "Digital task cards",
+      "Priority management",
+      "Workflow sequencing",
+      "Mobile notifications",
+      "Quality control",
+      "Multi-stage projects",
+    ],
+    label: "Team Sync",
+  },
+];
+
+/* ───────── Component ───────── */
 
 export default function SolutionsPage() {
-  // Refs for each section
-  const section1Ref = React.useRef(null);
-  const section2Ref = React.useRef(null);
-  const section3Ref = React.useRef(null);
-  const section4Ref = React.useRef(null);
-  const ctaRef = React.useRef(null);
+  const pageRef = useRef<HTMLDivElement>(null);
 
-  // Check if sections are in viewport using Framer Motion's useInView
-  const section1Visible = useInView(section1Ref, { once: true, amount: 0.2 });
-  const section2Visible = useInView(section2Ref, { once: true, amount: 0.2 });
-  const section3Visible = useInView(section3Ref, { once: true, amount: 0.2 });
-  const section4Visible = useInView(section4Ref, { once: true, amount: 0.2 });
-  const ctaVisible = useInView(ctaRef, { once: true, amount: 0.3 });
+  /* Stagger-in for feature pills inside each stacking card */
+  useGSAP(
+    () => {
+      if (!pageRef.current) return;
 
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: "easeOut" },
+      sections.forEach((_, index) => {
+        const pills = `.solution-pills-${index} .pill-chip`;
+
+        gsap.from(pills, {
+          opacity: 0,
+          scale: 0.8,
+          duration: 0.4,
+          stagger: 0.06,
+          ease: "back.out(2)",
+          scrollTrigger: {
+            trigger: `.solution-card-${index}`,
+            start: "top 75%",
+            once: true,
+          },
+        });
+      });
+
+      /* CTA buttons fade-in */
+      gsap.from(".cta-btn", {
+        opacity: 0,
+        y: 20,
+        stagger: 0.12,
+        duration: 0.6,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".solutions-cta",
+          start: "top 80%",
+          once: true,
+        },
+      });
     },
-  };
+    { scope: pageRef }
+  );
 
-  const slideInLeft = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.7, ease: "easeOut" },
-    },
-  };
+  /* ── Build MouseFollowImage items ── */
+  const navigatorItems = sections.map((s) => ({
+    text: s.title,
+    subtitle: s.label,
+  }));
 
-  const slideInRight = {
-    hidden: { opacity: 0, x: 50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.7, ease: "easeOut" },
-    },
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const listItemVariant = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
-
-  return (
-    <div className="container mx-auto px-6 py-16 md:py-24 bg-white">
-      {/* Page Title */}
-      <motion.h1
-        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
+  /* ── Build StackingCards content ── */
+  const stackCards = sections.map((section, index) => ({
+    key: section.label,
+    content: (
+      <div
+        className={`solution-card-${index} card-light rounded-2xl border border-[var(--color-border-light)] p-8 md:p-12`}
       >
-        APOS Solutions: Powering Your Success
-      </motion.h1>
-
-      {/* Introductory Paragraph */}
-      <motion.p
-        className="text-lg text-[var(--color-gray-600)] text-center mb-16 max-w-3xl mx-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, delay: 0.2 }}
-      >
-        Our comprehensive business platform is designed for any industry,
-        offering a suite of powerful features that streamline operations,
-        enhance client experiences, and boost your bottom line.
-      </motion.p>
-
-      {/* Feature 1: Workflow & Task Management */}
-      <motion.div
-        ref={section1Ref}
-        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
-      >
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          {/* Visual Placeholder (Left on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
-            variants={slideInLeft}
-            initial="hidden"
-            animate={section1Visible ? "visible" : "hidden"}
-          >
-            <div className="text-center p-4">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-10 h-10 text-[var(--color-primary)]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-              </div>
-              <p>Visual Placeholder: Interactive task management dashboard</p>
-            </div>
-          </motion.div>
-
-          {/* Text Content (Right on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2"
-            variants={slideInRight}
-            initial="hidden"
-            animate={section1Visible ? "visible" : "hidden"}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Intuitive Workflow & Service Management
-            </h2>
-            <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Empower your team with a lightning-fast, intuitive system that
-              reduces training time and minimizes errors. Our customizable
-              service and product management tools adapt to your business's
-              unique needs, from simple projects to complex enterprise
-              solutions.
-            </p>
-            <motion.ul
-              className="space-y-3"
-              variants={staggerContainer}
-              initial="hidden"
-              animate={section1Visible ? "visible" : "hidden"}
+        <div className="flex flex-col md:flex-row items-start gap-10">
+          {/* Visual placeholder with clip reveal */}
+          <div className="w-full md:w-[45%] flex-shrink-0">
+            <ImageClipReveal
+              direction={index % 2 === 0 ? "left" : "right"}
+              className="rounded-xl"
             >
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+              <div className="h-64 md:h-80 bg-gradient-to-br from-[var(--color-accent)]/10 to-[var(--color-bg-light)] flex items-center justify-center rounded-xl border border-[var(--color-border-light)]">
+                <span
+                  className="text-7xl font-bold text-[var(--color-accent)]/20"
+                  style={{ fontFamily: "var(--font-playfair, serif)" }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Customizable service catalogs, project templates, and
-                  modifiers with easy drag-and-drop editing
+                  {String(index + 1).padStart(2, "0")}
                 </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Quick-add tasks and service package builders to speed up
-                  project entry
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Smart search with voice recognition capabilities
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Automated prompts for service expansion and compliance alerts
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Lifecycle management with scheduled activation/deactivation
-                  dates
-                </span>
-              </motion.li>
-            </motion.ul>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Feature 2: Resource & Asset Coordination */}
-      <motion.div
-        ref={section2Ref}
-        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
-      >
-        <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-16">
-          {/* Visual Placeholder (Right on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
-            variants={slideInRight}
-            initial="hidden"
-            animate={section2Visible ? "visible" : "hidden"}
-          >
-            <div className="text-center p-4">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-10 h-10 text-[var(--color-primary)]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
               </div>
-              <p>
-                Visual Placeholder: Interactive resource schedule with
-                color-coded statuses
-              </p>
-            </div>
-          </motion.div>
+            </ImageClipReveal>
+          </div>
 
-          {/* Text Content (Left on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2"
-            variants={slideInLeft}
-            initial="hidden"
-            animate={section2Visible ? "visible" : "hidden"}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Dynamic Resource & Asset Coordination
-            </h2>
-            <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Optimize your business's resources and assets with our intuitive
-              visual interface. Track asset status in real-time, manage
-              bookings, and maximize utilization efficiency to increase
-              throughput and revenue.
-            </p>
-            <motion.ul
-              className="space-y-3"
-              variants={staggerContainer}
-              initial="hidden"
-              animate={section2Visible ? "visible" : "hidden"}
+          {/* Text content */}
+          <div className="w-full md:w-[55%]">
+            <span className="text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-medium mb-3 block">
+              {section.label}
+            </span>
+            <h3
+              className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-text-on-light)]"
+              style={{ fontFamily: "var(--font-playfair, serif)" }}
             >
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Drag-and-drop schedule designer with custom asset types
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Color-coded status indicators for instant visual assessment
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Integrated booking system with conflict management
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Usage timer tracking for optimized billing and maintenance
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Team assignments with balanced workload distribution
-                </span>
-              </motion.li>
-            </motion.ul>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Feature 3: Analytics & Reporting */}
-      <motion.div
-        ref={section3Ref}
-        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
-      >
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          {/* Visual Placeholder (Left on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
-            variants={slideInLeft}
-            initial="hidden"
-            animate={section3Visible ? "visible" : "hidden"}
-          >
-            <div className="text-center p-4">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-10 h-10 text-[var(--color-primary)]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </div>
-              <p>
-                Visual Placeholder: Dashboard with customizable reports and
-                visualizations
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Text Content (Right on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2"
-            variants={slideInRight}
-            initial="hidden"
-            animate={section3Visible ? "visible" : "hidden"}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Real-time Reporting & Analytics
-            </h2>
-            <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Gain powerful insights into your business's performance with our
-              comprehensive reporting and analytics tools. Make data-driven
-              decisions with customizable dashboards that highlight key metrics
-              and trends in real-time.
+              {section.title}
+            </h3>
+            <p className="text-base md:text-lg text-[var(--color-text-on-light-secondary)] mb-8 leading-relaxed">
+              {section.description}
             </p>
-            <motion.ul
-              className="space-y-3"
-              variants={staggerContainer}
-              initial="hidden"
-              animate={section3Visible ? "visible" : "hidden"}
-            >
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Customizable dashboards with your choice of key performance
-                  indicators (KPIs)
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Sales and revenue analysis by service, category, time period,
-                  and more
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Labor cost reporting with scheduling optimization
-                  recommendations
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Inventory and resource cost percentage tracking
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Automated reports delivered to your email on your schedule
-                </span>
-              </motion.li>
-            </motion.ul>
-          </motion.div>
-        </div>
-      </motion.div>
 
-      {/* Feature 4: Team & Workflow Synchronization */}
-      <motion.div
-        ref={section4Ref}
-        className="py-12 md:py-20 border-b border-[var(--color-primary-light)]"
-      >
-        <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-16">
-          {/* Visual Placeholder (Right on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2 h-64 md:h-80 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center text-[var(--color-primary)] shadow-md overflow-hidden"
-            variants={slideInRight}
-            initial="hidden"
-            animate={section4Visible ? "visible" : "hidden"}
-          >
-            <div className="text-center p-4">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-10 h-10 text-[var(--color-primary)]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+            {/* Feature pills */}
+            <div className={`solution-pills-${index} flex flex-wrap gap-2.5`}>
+              {section.features.map((feature, fIndex) => (
+                <span
+                  key={fIndex}
+                  className="pill-chip inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
+                    border border-[var(--color-border-light)] text-[var(--color-text-on-light-secondary)]
+                    transition-all duration-200
+                    hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)]"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <p>
-                Visual Placeholder: Team collaboration screen with task tiles
-                and timers
-              </p>
+                  <svg
+                    className="w-3.5 h-3.5 text-[var(--color-accent)] flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  {feature}
+                </span>
+              ))}
             </div>
-          </motion.div>
-
-          {/* Text Content (Left on desktop) */}
-          <motion.div
-            className="w-full md:w-1/2"
-            variants={slideInLeft}
-            initial="hidden"
-            animate={section4Visible ? "visible" : "hidden"}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-primary-dark)]">
-              Team & Workflow Synchronization
-            </h2>
-            <p className="text-lg text-[var(--color-gray-600)] mb-6">
-              Streamline communication between your front-line and back-end
-              teams with our robust synchronization system. Eliminate paper
-              trails, reduce errors, and optimize task completion times for
-              faster service and higher client satisfaction.
-            </p>
-            <motion.ul
-              className="space-y-3"
-              variants={staggerContainer}
-              initial="hidden"
-              animate={section4Visible ? "visible" : "hidden"}
-            >
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Digital task cards with timers and special instructions
-                  highlighted
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Color-coded task age indicators for priority management
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Workflow sequencing for perfectly timed multi-stage projects
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Task completion notifications for team members via mobile
-                  devices
-                </span>
-              </motion.li>
-              <motion.li
-                className="flex items-start"
-                variants={listItemVariant}
-              >
-                <svg
-                  className="w-5 h-5 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span className="text-[var(--color-gray-600)]">
-                  Component-level instructions for consistent quality control
-                </span>
-              </motion.li>
-            </motion.ul>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* CTA Section */}
-      <motion.div
-        ref={ctaRef}
-        className="py-16 mt-8 bg-[var(--color-primary)] text-white rounded-xl"
-        variants={fadeIn}
-        initial="hidden"
-        animate={ctaVisible ? "visible" : "hidden"}
-      >
-        <div className="text-center px-4 md:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to see APOS Solutions in action?
-          </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-xl mx-auto">
-            Experience how our platform can transform your business operations
-            and boost your bottom line.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="/download"
-                className="bg-white text-[var(--color-primary)] hover:bg-[var(--color-primary-light)] font-semibold py-3 px-6 rounded-lg shadow-md inline-block"
-              >
-                Request a Demo
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="/contact"
-                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[var(--color-primary)] font-semibold py-3 px-6 rounded-lg inline-block"
-              >
-                Contact Sales
-              </Link>
-            </motion.div>
           </div>
         </div>
-      </motion.div>
+      </div>
+    ),
+  }));
+
+  return (
+    <div ref={pageRef}>
+      {/* ═════ 1. HEADER — Dark ═════ */}
+      <section className="relative bg-[var(--color-bg-dark)] pt-28 md:pt-36 pb-20 md:pb-28 overflow-hidden">
+        {/* Decorative accent blurs */}
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[var(--color-accent)]/[0.04] rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-[var(--color-accent)]/[0.03] rounded-full blur-[100px]" />
+
+        <div className="container mx-auto px-6 relative z-10 text-center">
+          <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-accent)] font-medium mb-8 opacity-0 animate-[fadeIn_0.6s_0.2s_forwards]">
+            Our Platform
+          </p>
+
+          <ScatteredText
+            text="Powering Your Success"
+            tag="h1"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.02] tracking-tight max-w-5xl mx-auto text-white"
+            scrub={false}
+            delay={0.3}
+          />
+
+          <div className="mt-8 max-w-2xl mx-auto">
+            <TextLineReveal
+              tag="p"
+              className="text-lg md:text-xl text-[var(--color-text-on-dark-secondary)] leading-relaxed"
+              delay={0.8}
+            >
+              Our comprehensive business platform is designed for any industry,
+              offering a suite of powerful features that streamline operations,
+              enhance client experiences, and boost your bottom line.
+            </TextLineReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ═════ 2. SOLUTION NAVIGATOR — Dark ═════ */}
+      <section className="bg-[var(--color-bg-dark)] pb-24 md:pb-32">
+        <div className="container mx-auto px-6">
+          <MouseFollowImage items={navigatorItems} />
+        </div>
+      </section>
+
+      {/* ═════ 3. SOLUTION DETAILS — Light, stacking cards ═════ */}
+      <section className="bg-[var(--color-bg-light)] py-24 md:py-32">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <ScatteredText
+              text="Deep Dive into Each Solution"
+              tag="h2"
+              className="text-3xl md:text-5xl font-bold tracking-tight text-[var(--color-text-on-light)]"
+            />
+            <div className="mt-4">
+              <TextLineReveal
+                tag="p"
+                className="text-[var(--color-text-on-light-secondary)] max-w-2xl mx-auto text-lg"
+              >
+                Explore the tools and capabilities that set APOS apart.
+              </TextLineReveal>
+            </div>
+          </div>
+
+          <StackingCards cards={stackCards} />
+        </div>
+      </section>
+
+      {/* ═════ 4. CTA — Dark, spotlight ═════ */}
+      <section className="solutions-cta bg-[var(--color-bg-dark)] py-24 md:py-32">
+        <div className="container mx-auto px-6">
+          <SpotlightReveal
+            spotlightSize={300}
+            className="rounded-2xl border border-[var(--color-border-dark)] py-20 md:py-28 px-8 md:px-16"
+          >
+            <div className="text-center max-w-3xl mx-auto">
+              <h2
+                className="text-3xl md:text-5xl font-bold mb-6 text-white"
+                style={{ fontFamily: "var(--font-playfair, serif)" }}
+              >
+                Ready to see APOS Solutions{" "}
+                <span className="text-gradient-accent">in action?</span>
+              </h2>
+              <p className="text-lg text-[var(--color-text-on-dark-secondary)] mb-10 max-w-xl mx-auto leading-relaxed">
+                Experience how our platform can transform your business
+                operations and boost your bottom line.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link
+                  href="/download"
+                  className="cta-btn inline-flex items-center justify-center px-8 py-4 rounded-full bg-[var(--color-accent)] text-white font-semibold text-sm hover:bg-[var(--color-accent-dark)] transition-all duration-300 hover:shadow-[0_0_30px_var(--color-accent-glow)]"
+                >
+                  Request a Demo
+                </Link>
+                <Link
+                  href="/contact"
+                  className="cta-btn inline-flex items-center justify-center px-8 py-4 rounded-full border border-[var(--color-border-dark)] text-white font-semibold text-sm hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-300"
+                >
+                  Contact Sales
+                </Link>
+              </div>
+            </div>
+          </SpotlightReveal>
+        </div>
+      </section>
     </div>
   );
 }

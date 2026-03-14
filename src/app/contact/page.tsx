@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
 import {
   FiMail,
   FiPhone,
@@ -9,8 +10,14 @@ import {
   FiCheckCircle,
   FiAlertCircle,
 } from "react-icons/fi";
+import TextLineReveal from "@/components/ui/TextLineReveal";
+import ImageClipReveal from "@/components/ui/ImageClipReveal";
 
 export default function ContactPage() {
+  const pageRef = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+
   // Form state
   const [formData, setFormData] = useState({
     name: "",
@@ -140,6 +147,18 @@ export default function ContactPage() {
         subject: "",
         message: "",
       });
+
+      // Animate success message
+      setTimeout(() => {
+        if (successRef.current) {
+          gsap.from(successRef.current, {
+            scale: 0.9,
+            opacity: 0,
+            duration: 0.4,
+            ease: "back.out(1.7)",
+          });
+        }
+      }, 0);
     } catch (error) {
       // The catch block now handles network or server errors
       // Simulate error handling
@@ -149,379 +168,374 @@ export default function ContactPage() {
         isError: true,
         message: "An error occurred. Please try again later.",
       });
+
+      // Animate error message
+      setTimeout(() => {
+        if (errorRef.current) {
+          gsap.from(errorRef.current, {
+            scale: 0.9,
+            opacity: 0,
+            duration: 0.4,
+            ease: "back.out(1.7)",
+          });
+        }
+      }, 0);
     }
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
+  // GSAP animations for form fields
+  useGSAP(
+    () => {
+      // Form fields stagger reveal from bottom
+      gsap.from("[data-animate='form-field']", {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        ease: "power3.out",
+        stagger: 0.1,
+        delay: 0.5,
+      });
     },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
+    { scope: pageRef }
+  );
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="container mx-auto px-4 py-16 md:py-24 bg-white"
-    >
-      {/* Page Header */}
-      <motion.h1
-        variants={itemVariants}
-        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
-      >
-        Get In Touch
-      </motion.h1>
+    <div ref={pageRef} className="min-h-screen bg-[var(--color-bg-light)]">
+      {/* ── Section 1: Header (DARK) ── */}
+      <section className="bg-[var(--color-bg-dark)] pt-32 md:pt-40 pb-36 md:pb-44">
+        <div className="container mx-auto px-4 text-center">
+          <TextLineReveal
+            tag="h1"
+            className="text-4xl md:text-6xl font-bold text-white mb-6"
+            stagger={0.12}
+          >
+            Get In Touch
+          </TextLineReveal>
 
-      {/* Introductory Text */}
-      <motion.p
-        variants={itemVariants}
-        className="text-lg text-center mb-12 max-w-xl mx-auto text-[var(--color-gray-600)]"
-      >
-        Have questions about APOS Solutions or need support? Fill out the form
-        below, and we ll get back to you as soon as possible.
-      </motion.p>
+          <TextLineReveal
+            tag="p"
+            className="text-lg md:text-xl max-w-xl mx-auto text-[var(--color-text-on-dark-secondary)]"
+            delay={0.2}
+          >
+            Have questions about APOS Solutions or need support? Fill out the form below, and we'll get back to you as soon as possible.
+          </TextLineReveal>
+        </div>
+      </section>
 
-      {/* Main Content Area - Side by Side on Desktop, Stacked on Mobile */}
-      <motion.div
-        variants={containerVariants}
-        className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12"
-      >
-        {/* Contact Form Section */}
-        <motion.div
-          variants={itemVariants}
-          className="flex-1 bg-white rounded-2xl shadow-md overflow-hidden p-8 border border-[var(--color-primary-light)]"
-        >
-          <h2 className="text-2xl font-semibold mb-6 text-[var(--color-primary-dark)]">
-            Send Us a Message
-          </h2>
-
-          {/* Success Message */}
-          {submitStatus.isSubmitted && !submitStatus.isError && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 bg-[var(--color-primary-light)] border-l-4 border-[var(--color-primary)] p-4 rounded"
+      {/* ── Section 2 & 3: Form + Contact Info (LIGHT) ── */}
+      <section className="bg-[var(--color-bg-light)] -mt-20 md:-mt-24 pb-20 md:pb-32">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12">
+            {/* ── Form Card (slides in with ImageClipReveal) ── */}
+            <ImageClipReveal
+              direction="bottom"
+              className="lg:w-[60%]"
+              duration={1}
+              scale={false}
             >
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <FiCheckCircle className="h-5 w-5 text-[var(--color-primary)]" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-[var(--color-primary-dark)]">
-                    {submitStatus.message}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
+              <div className="bg-[var(--color-bg-light-elevated)] border border-[var(--color-border-light)] rounded-2xl shadow-lg p-8 md:p-10">
+                <h2 className="text-2xl font-semibold mb-6 text-[var(--color-text-on-light)]">
+                  Send Us a Message
+                </h2>
 
-          {/* Error Message */}
-          {submitStatus.isError && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded"
-            >
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <FiAlertCircle className="h-5 w-5 text-red-500" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{submitStatus.message}</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Contact Form */}
-          <form onSubmit={handleSubmit}>
-            {/* Name Field */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
-              >
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`w-full border text-[var(--color-gray-600)] ${
-                  errors.name
-                    ? "border-red-500"
-                    : "border-[var(--color-gray-300)]"
-                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
-                placeholder="John Doe"
-              />
-              {errors.name && (
-                <p className="text-red-600 text-sm mt-1">{errors.name}</p>
-              )}
-            </motion.div>
-
-            {/* Email Field */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
-              >
-                Email Address <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full border text-[var(--color-gray-600)] ${
-                  errors.email
-                    ? "border-red-500"
-                    : "border-[var(--color-gray-300)]"
-                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
-                placeholder="john.doe@example.com"
-              />
-              {errors.email && (
-                <p className="text-red-600 text-sm mt-1">{errors.email}</p>
-              )}
-            </motion.div>
-
-            {/* Subject Field */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <label
-                htmlFor="subject"
-                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
-              >
-                Subject <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                className={`w-full border text-[var(--color-gray-600)] ${
-                  errors.subject
-                    ? "border-red-500"
-                    : "border-[var(--color-gray-300)]"
-                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
-                placeholder="Product Inquiry"
-              />
-              {errors.subject && (
-                <p className="text-red-600 text-sm mt-1">{errors.subject}</p>
-              )}
-            </motion.div>
-
-            {/* Message Field */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-[var(--color-gray-600)] mb-1"
-              >
-                Message <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows={5}
-                className={`w-full border text-[var(--color-gray-600)] ${
-                  errors.message
-                    ? "border-red-500"
-                    : "border-[var(--color-gray-300)]"
-                } focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] rounded-md shadow-sm px-4 py-2 transition-colors`}
-                placeholder="Your message here..."
-              ></textarea>
-              {errors.message && (
-                <p className="text-red-600 text-sm mt-1">{errors.message}</p>
-              )}
-            </motion.div>
-
-            {/* Submit Button */}
-            <motion.div
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <button
-                type="submit"
-                disabled={submitStatus.isSubmitting}
-                className={`w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-3 px-6 rounded-lg 
-                          shadow-md transition duration-300 ease-in-out
-                          ${
-                            submitStatus.isSubmitting
-                              ? "opacity-70 cursor-not-allowed"
-                              : ""
-                          }`}
-              >
-                {submitStatus.isSubmitting ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Sending...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center">
-                    <FiSend className="mr-2" />
-                    Send Message
-                  </span>
+                {/* Success Message */}
+                {submitStatus.isSubmitted && !submitStatus.isError && (
+                  <div
+                    ref={successRef}
+                    className="mb-6 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded"
+                  >
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <FiCheckCircle className="h-5 w-5 text-emerald-500" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-emerald-700">
+                          {submitStatus.message}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
-              </button>
-            </motion.div>
-          </form>
-        </motion.div>
 
-        {/* Contact Information Section */}
-        <motion.div variants={itemVariants} className="lg:w-96 space-y-8">
-          <div className="bg-[var(--color-primary-light)] p-8 rounded-2xl">
-            <h2 className="text-2xl font-semibold mb-6 text-[var(--color-primary-dark)]">
-              Contact Information
-            </h2>
-
-            <div className="space-y-8">
-              {/* Email Contact */}
-              <motion.div
-                className="flex items-start"
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-4 text-white">
-                  <FiMail size={20} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-[var(--color-primary-dark)] mb-1">
-                    Email Us
-                  </h3>
-                  <p className="text-[var(--color-gray-600)] mb-1">
-                    For general inquiries and support
-                  </p>
-                  <a
-                    href="mailto:info@apos-kassen.ch"
-                    className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
+                {/* Error Message */}
+                {submitStatus.isError && (
+                  <div
+                    ref={errorRef}
+                    className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded"
                   >
-                    info@apos-kassen.ch
-                  </a>
-                </div>
-              </motion.div>
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <FiAlertCircle className="h-5 w-5 text-red-500" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-red-700">
+                          {submitStatus.message}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-              {/* Phone Contact */}
-              <motion.div
-                className="flex items-start"
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-4 text-white">
-                  <FiPhone size={20} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-[var(--color-primary-dark)] mb-1">
-                    Call Us
-                  </h3>
-                  <p className="text-[var(--color-gray-600)] mb-1">
-                    Monday to Friday, 9am - 5pm ET
-                  </p>
-                  <a
-                    href="tel:+41772250348"
-                    className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium"
-                  >
-                    +41 77 225 03 48
-                  </a>
-                </div>
-              </motion.div>
+                {/* Contact Form */}
+                <form onSubmit={handleSubmit}>
+                  {/* Name and Email - Side by Side on Desktop */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* Name Field */}
+                    <div data-animate="form-field">
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-[var(--color-text-on-light-secondary)] mb-1.5"
+                      >
+                        Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={`w-full bg-[var(--color-bg-light-elevated)] border ${
+                          errors.name
+                            ? "border-red-500"
+                            : "border-[var(--color-border-light)]"
+                        } text-[var(--color-text-on-light)] focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]/30 rounded-lg px-4 py-2.5 transition-colors placeholder:text-[var(--color-text-on-light-muted)] outline-none`}
+                        placeholder="John Doe"
+                      />
+                      {errors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.name}
+                        </p>
+                      )}
+                    </div>
 
-              {/* Visit Us */}
-              <motion.div
-                className="flex items-start"
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    {/* Email Field */}
+                    <div data-animate="form-field">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-[var(--color-text-on-light-secondary)] mb-1.5"
+                      >
+                        Email Address <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`w-full bg-[var(--color-bg-light-elevated)] border ${
+                          errors.email
+                            ? "border-red-500"
+                            : "border-[var(--color-border-light)]"
+                        } text-[var(--color-text-on-light)] focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]/30 rounded-lg px-4 py-2.5 transition-colors placeholder:text-[var(--color-text-on-light-muted)] outline-none`}
+                        placeholder="john.doe@example.com"
+                      />
+                      {errors.email && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Subject Field */}
+                  <div data-animate="form-field" className="mb-6">
+                    <label
+                      htmlFor="subject"
+                      className="block text-sm font-medium text-[var(--color-text-on-light-secondary)] mb-1.5"
+                    >
+                      Subject <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className={`w-full bg-[var(--color-bg-light-elevated)] border ${
+                        errors.subject
+                          ? "border-red-500"
+                          : "border-[var(--color-border-light)]"
+                      } text-[var(--color-text-on-light)] focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]/30 rounded-lg px-4 py-2.5 transition-colors placeholder:text-[var(--color-text-on-light-muted)] outline-none`}
+                      placeholder="Product Inquiry"
+                    />
+                    {errors.subject && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.subject}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Message Field */}
+                  <div data-animate="form-field" className="mb-6">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-[var(--color-text-on-light-secondary)] mb-1.5"
+                    >
+                      Message <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={5}
+                      className={`w-full bg-[var(--color-bg-light-elevated)] border ${
+                        errors.message
+                          ? "border-red-500"
+                          : "border-[var(--color-border-light)]"
+                      } text-[var(--color-text-on-light)] focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)]/30 rounded-lg px-4 py-2.5 transition-colors placeholder:text-[var(--color-text-on-light-muted)] outline-none resize-none`}
+                      placeholder="Your message here..."
+                    ></textarea>
+                    {errors.message && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <div data-animate="form-field">
+                    <button
+                      type="submit"
+                      disabled={submitStatus.isSubmitting}
+                      className={`w-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-dark)] text-white font-semibold py-3 px-6 rounded-lg
+                                transition duration-300 ease-in-out
+                                ${
+                                  submitStatus.isSubmitting
+                                    ? "opacity-70 cursor-not-allowed"
+                                    : ""
+                                }`}
+                    >
+                      {submitStatus.isSubmitting ? (
+                        <span className="flex items-center justify-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Sending...
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          <FiSend className="mr-2" />
+                          Send Message
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </ImageClipReveal>
+
+            {/* ── Contact Information Cards (staggered ImageClipReveal) ── */}
+            <div className="lg:w-[40%] space-y-6">
+              {/* Email Contact Card */}
+              <ImageClipReveal
+                direction="right"
+                duration={0.9}
+                delay={0.1}
+                scale={false}
               >
-                <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-4 text-white">
-                  <FiMapPin size={20} />
+                <div className="card-light p-6">
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mr-4 text-[var(--color-accent)] shrink-0">
+                      <FiMail size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-[var(--color-text-on-light)] mb-1">
+                        Email Us
+                      </h3>
+                      <p className="text-sm text-[var(--color-text-on-light-secondary)] mb-2">
+                        For general inquiries and support
+                      </p>
+                      <a
+                        href="mailto:info@apos-kassen.ch"
+                        className="text-[var(--color-accent)] hover:text-[var(--color-accent-dark)] font-medium transition-colors"
+                      >
+                        info@apos-kassen.ch
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-[var(--color-primary-dark)] mb-1">
-                    Visit Us
-                  </h3>
-                  <p className="text-[var(--color-gray-600)] mb-1">
-                    Our headquarters location
-                  </p>
-                  <address className="not-italic text-[var(--color-gray-600)]">
-                    Balfrinstrasse 14
-                    <br />
-                    3930 Visp, Switzerland
-                  </address>
+              </ImageClipReveal>
+
+              {/* Phone Contact Card */}
+              <ImageClipReveal
+                direction="right"
+                duration={0.9}
+                delay={0.25}
+                scale={false}
+              >
+                <div className="card-light p-6">
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mr-4 text-[var(--color-accent)] shrink-0">
+                      <FiPhone size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-[var(--color-text-on-light)] mb-1">
+                        Call Us
+                      </h3>
+                      <p className="text-sm text-[var(--color-text-on-light-secondary)] mb-2">
+                        Monday to Friday, 9am - 5pm ET
+                      </p>
+                      <a
+                        href="tel:+41772250348"
+                        className="text-[var(--color-accent)] hover:text-[var(--color-accent-dark)] font-medium transition-colors"
+                      >
+                        +41 77 225 03 48
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </motion.div>
+              </ImageClipReveal>
+
+              {/* Visit Us Card */}
+              <ImageClipReveal
+                direction="right"
+                duration={0.9}
+                delay={0.4}
+                scale={false}
+              >
+                <div className="card-light p-6">
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mr-4 text-[var(--color-accent)] shrink-0">
+                      <FiMapPin size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-[var(--color-text-on-light)] mb-1">
+                        Visit Us
+                      </h3>
+                      <p className="text-sm text-[var(--color-text-on-light-secondary)] mb-2">
+                        Our headquarters location
+                      </p>
+                      <address className="not-italic text-[var(--color-text-on-light-secondary)]">
+                        Balfrinstrasse 14
+                        <br />
+                        3930 Visp, Switzerland
+                      </address>
+                    </div>
+                  </div>
+                </div>
+              </ImageClipReveal>
             </div>
           </div>
-
-          {/* Business Hours */}
-          {/* <div className="bg-white p-8 rounded-2xl shadow-md border border-[var(--color-primary-light)]">
-            <h3 className="text-xl font-semibold mb-4 text-[var(--color-primary-dark)]">
-              Business Hours
-            </h3>
-            <ul className="space-y-2">
-              <li className="flex justify-between">
-                <span className="text-[var(--color-gray-600)]">
-                  Monday - Friday:
-                </span>
-                <span className="font-medium text-[var(--color-primary-dark)]">
-                  9:00 AM - 5:00 PM
-                </span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-[var(--color-gray-600)]">Saturday:</span>
-                <span className="font-medium text-[var(--color-primary-dark)]">
-                  10:00 AM - 2:00 PM
-                </span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-[var(--color-gray-600)]">Sunday:</span>
-                <span className="font-medium text-[var(--color-primary-dark)]">
-                  Closed
-                </span>
-              </li>
-            </ul>
-          </div> */}
-        </motion.div>
-      </motion.div>
-    </motion.div>
+        </div>
+      </section>
+    </div>
   );
 }

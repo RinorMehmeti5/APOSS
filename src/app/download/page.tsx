@@ -1,12 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import TextLineReveal from "@/components/ui/TextLineReveal";
+import ImageClipReveal from "@/components/ui/ImageClipReveal";
 
 export default function DownloadPage() {
   const [activeOs, setActiveOs] = useState<"windows" | "mac" | "linux">(
     "windows"
   );
+
+  const pageRef = useRef<HTMLDivElement>(null);
+  const sysReqRef = useRef<HTMLUListElement>(null);
+  const installRef = useRef<HTMLOListElement>(null);
 
   // Version information
   const versionInfo = {
@@ -80,372 +87,314 @@ export default function DownloadPage() {
     setActiveOs(os);
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
-      },
-    },
+  // Install instructions data
+  const installInstructions = {
+    windows: [
+      "Download the APOS installer (.exe) file from the button above.",
+      "Double-click the downloaded file to start the installation wizard.",
+      "Follow the on-screen instructions to complete the installation.",
+      "Launch APOS Solutions from your desktop shortcut or applications folder and begin setup.",
+    ],
+    mac: [
+      "Download the APOS disk image (.dmg) file from the button above.",
+      "Double-click the downloaded .dmg file to open it.",
+      "Drag the APOS Solutions icon to the Applications folder.",
+      "Launch APOS Solutions from your desktop shortcut or applications folder and begin setup.",
+    ],
+    linux: [
+      "Download the APOS AppImage file from the button above.",
+      "Make the AppImage executable by right-clicking it, selecting Properties, and enabling 'Allow executing file as program' in the Permissions tab.",
+      "Double-click the AppImage to run the application.",
+      "Launch APOS Solutions from your desktop shortcut or applications folder and begin setup.",
+    ],
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
+  // Initial page load animation
+  useGSAP(
+    () => {
+      gsap.from("[data-animate='section']", {
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.15,
+      });
     },
-  };
+    { scope: pageRef }
+  );
 
-  const listItemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
+  // Tab change animation: cross-fade system requirements and install instructions
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    const tl = gsap.timeline();
+
+    // Fade out both sections
+    tl.to([sysReqRef.current, installRef.current], {
+      opacity: 0,
+      y: -10,
+      duration: 0.2,
+      ease: "power2.in",
+    });
+
+    // Fade in with new content (after React re-renders via key)
+    tl.fromTo(
+      [sysReqRef.current, installRef.current],
+      { opacity: 0, y: 10 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.35,
+        ease: "power2.out",
+        stagger: 0.08,
+      }
+    );
+  }, [activeOs]);
 
   return (
-    <motion.div
-      className="container mx-auto px-4 py-16 md:py-24 bg-white"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      {/* Page Header */}
-      <motion.h1
-        className="text-3xl md:text-4xl font-bold text-center mb-6 text-[var(--color-primary-dark)]"
-        variants={itemVariants}
-      >
-        Download APOS Solutions
-      </motion.h1>
+    <div ref={pageRef} className="min-h-screen bg-[var(--color-bg-light)]">
+      {/* ── Section 1: Dark Header ── */}
+      <section className="bg-[var(--color-bg-dark)] pt-28 md:pt-36 pb-16 md:pb-24">
+        <div className="container mx-auto px-4 text-center">
+          <TextLineReveal
+            tag="h1"
+            className="text-3xl md:text-5xl font-bold tracking-tight text-white max-w-3xl mx-auto"
+            stagger={0.08}
+          >
+            Download APOS Solutions
+          </TextLineReveal>
 
-      {/* Value Reinforcement */}
-      <motion.p
-        className="text-lg text-[var(--color-gray-600)] text-center mb-12 max-w-2xl mx-auto"
-        variants={itemVariants}
-      >
-        Join thousands of businesses streamlining their operations with our
-        powerful and intuitive POS system.
-      </motion.p>
-
-      {/* OS Selection Tabs */}
-      <motion.div className="flex justify-center mb-8" variants={itemVariants}>
-        <div className="inline-flex bg-[var(--color-primary-light)] rounded-lg p-1">
-          <motion.button
-            onClick={() => handleOsSelect("windows")}
-            className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
-              activeOs === "windows"
-                ? "bg-white text-[var(--color-primary)] shadow-sm"
-                : "text-[var(--color-gray-600)] hover:bg-white/50"
-            }`}
-            whileHover={{ scale: activeOs !== "windows" ? 1.05 : 1 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <WindowsIcon /> Windows
-          </motion.button>
-          <motion.button
-            onClick={() => handleOsSelect("mac")}
-            className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
-              activeOs === "mac"
-                ? "bg-white text-[var(--color-primary)] shadow-sm"
-                : "text-[var(--color-gray-600)] hover:bg-white/50"
-            }`}
-            whileHover={{ scale: activeOs !== "mac" ? 1.05 : 1 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <MacIcon /> macOS
-          </motion.button>
-          <motion.button
-            onClick={() => handleOsSelect("linux")}
-            className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
-              activeOs === "linux"
-                ? "bg-white text-[var(--color-primary)] shadow-sm"
-                : "text-[var(--color-gray-600)] hover:bg-white/50"
-            }`}
-            whileHover={{ scale: activeOs !== "linux" ? 1.05 : 1 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <LinuxIcon /> Linux
-          </motion.button>
+          <div className="mt-6">
+            <TextLineReveal
+              tag="p"
+              className="text-lg md:text-xl text-[var(--color-text-on-dark-secondary)] max-w-2xl mx-auto leading-relaxed"
+              delay={0.4}
+              stagger={0.06}
+            >
+              Join thousands of businesses streamlining their operations with our powerful and intuitive POS system.
+            </TextLineReveal>
+          </div>
         </div>
-      </motion.div>
+      </section>
 
-      {/* Download Card */}
-      <motion.div
-        className="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-[var(--color-primary-light)]"
-        variants={itemVariants}
-      >
-        <div className="p-8">
-          {/* Download Info Section */}
-          <div className="flex flex-col md:flex-row items-center justify-between mb-8">
-            <div className="mb-6 md:mb-0">
-              <h2 className="text-2xl font-bold mb-2 flex items-center text-[var(--color-primary-dark)]">
-                {activeOs === "windows" && <WindowsIcon />}
-                {activeOs === "mac" && <MacIcon />}
-                {activeOs === "linux" && <LinuxIcon />}
-                APOS Solutions for{" "}
-                {activeOs === "windows"
-                  ? "Windows"
-                  : activeOs === "mac"
-                  ? "macOS"
-                  : "Linux"}
-              </h2>
-              <div className="text-sm text-[var(--color-gray-600)] space-y-1">
-                <p>Version: {versionInfo.version}</p>
-                <p>Released: {versionInfo.releaseDate}</p>
-                <p>Size: {versionInfo.size[activeOs]}</p>
+      {/* ── Section 2: OS Tabs (Light bg) ── */}
+      <section className="bg-[var(--color-bg-light)] pt-12 pb-4">
+        <div className="container mx-auto px-4">
+          <div data-animate="section" className="flex justify-center">
+            <div className="inline-flex bg-[var(--color-bg-light-secondary)] rounded-lg p-1.5 gap-1">
+              <button
+                onClick={() => handleOsSelect("windows")}
+                className={`flex items-center px-5 py-2.5 rounded-md transition-all duration-200 font-medium text-sm ${
+                  activeOs === "windows"
+                    ? "bg-[var(--color-accent)] text-white shadow-[0_0_15px_var(--color-accent-glow)]"
+                    : "text-[var(--color-text-on-light-secondary)] hover:bg-[var(--color-bg-light-secondary)]"
+                }`}
+              >
+                <WindowsIcon /> Windows
+              </button>
+              <button
+                onClick={() => handleOsSelect("mac")}
+                className={`flex items-center px-5 py-2.5 rounded-md transition-all duration-200 font-medium text-sm ${
+                  activeOs === "mac"
+                    ? "bg-[var(--color-accent)] text-white shadow-[0_0_15px_var(--color-accent-glow)]"
+                    : "text-[var(--color-text-on-light-secondary)] hover:bg-[var(--color-bg-light-secondary)]"
+                }`}
+              >
+                <MacIcon /> macOS
+              </button>
+              <button
+                onClick={() => handleOsSelect("linux")}
+                className={`flex items-center px-5 py-2.5 rounded-md transition-all duration-200 font-medium text-sm ${
+                  activeOs === "linux"
+                    ? "bg-[var(--color-accent)] text-white shadow-[0_0_15px_var(--color-accent-glow)]"
+                    : "text-[var(--color-text-on-light-secondary)] hover:bg-[var(--color-bg-light-secondary)]"
+                }`}
+              >
+                <LinuxIcon /> Linux
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 3: Download Card (Light bg) ── */}
+      <section className="bg-[var(--color-bg-light)] pb-16">
+        <div className="container mx-auto px-4">
+          <ImageClipReveal
+            direction="center"
+            className="max-w-2xl mx-auto mt-8"
+          >
+            <div className="bg-[var(--color-bg-light-elevated)] rounded-xl border border-[var(--color-border-light)] shadow-md overflow-hidden">
+              <div className="p-8">
+                {/* Download Info Section */}
+                <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+                  <div className="mb-6 md:mb-0">
+                    <h2 className="text-2xl font-bold mb-2 flex items-center text-[var(--color-text-on-light)]">
+                      {activeOs === "windows" && <WindowsIcon />}
+                      {activeOs === "mac" && <MacIcon />}
+                      {activeOs === "linux" && <LinuxIcon />}
+                      APOS Solutions for{" "}
+                      {activeOs === "windows"
+                        ? "Windows"
+                        : activeOs === "mac"
+                        ? "macOS"
+                        : "Linux"}
+                    </h2>
+                    <div className="text-sm text-[var(--color-text-on-light-secondary)] space-y-1">
+                      <p>Version: {versionInfo.version}</p>
+                      <p>Released: {versionInfo.releaseDate}</p>
+                      <p>Size: {versionInfo.size[activeOs]}</p>
+                    </div>
+                  </div>
+
+                  {/* Trust Badges */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="bg-[var(--color-accent)]/10 text-[var(--color-accent)] text-xs font-semibold px-3 py-1.5 rounded-full flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-1.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
+                      </svg>
+                      Virus Scanned
+                    </div>
+                    <div className="bg-[var(--color-accent)]/10 text-[var(--color-accent)] text-xs font-semibold px-3 py-1.5 rounded-full flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-1.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                      </svg>
+                      Secure Download
+                    </div>
+                  </div>
+                </div>
+
+                {/* Download Button */}
+                <div className="text-center">
+                  <a
+                    href="#"
+                    className="inline-flex items-center justify-center bg-[var(--color-accent)] hover:bg-[var(--color-accent-dark)] hover:accent-glow-sm text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-300 hover:shadow-[0_0_15px_var(--color-accent-glow)]"
+                  >
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    Download Now
+                  </a>
+                  <p className="text-sm text-[var(--color-text-on-light-secondary)] mt-4">
+                    By downloading, you agree to our{" "}
+                    <Link
+                      href="#"
+                      className="text-[var(--color-accent)] hover:underline"
+                    >
+                      Terms of Service
+                    </Link>
+                  </p>
+                </div>
+              </div>
+
+              {/* ── Section 4: System Requirements ── */}
+              <div className="bg-[var(--color-bg-light-secondary)] border-t border-[var(--color-border-light)] p-6">
+                <h3 className="font-semibold mb-3 text-[var(--color-text-on-light)]">
+                  System Requirements
+                </h3>
+                <ul
+                  ref={sysReqRef}
+                  className="text-sm text-[var(--color-text-on-light-secondary)] space-y-1.5"
+                >
+                  {systemRequirements[activeOs].map((requirement, index) => (
+                    <li key={index} className="flex items-start">
+                      <svg
+                        className="w-4 h-4 text-[var(--color-accent)] mr-2 mt-0.5 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      {requirement}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-
-            {/* Trust Badges */}
-            <div className="flex flex-col items-center">
-              <motion.div
-                className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center mb-2"
-                whileHover={{ scale: 1.05 }}
-              >
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-                Virus Scanned
-              </motion.div>
-              <motion.div
-                className="bg-[var(--color-primary-light)] text-[var(--color-primary)] text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-                Secure Download
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Download Button */}
-          <div className="text-center">
-            <motion.a
-              // href={`/downloads/apos-${activeOs}-${versionInfo.version}.${
-              //   activeOs === "windows"
-              //     ? "exe"
-              //     : activeOs === "mac"
-              //     ? "dmg"
-              //     : "AppImage"
-              // }`}
-              href="#"
-              className="inline-flex items-center justify-center bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white font-semibold py-4 px-8 rounded-lg shadow-md text-lg transition-colors duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-              Download Now
-            </motion.a>
-            <motion.p
-              className="text-sm text-[var(--color-gray-600)] mt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              By downloading, you agree to our{" "}
-              <Link
-                href="#"
-                className="text-[var(--color-primary)] hover:underline"
-              >
-                Terms of Service
-              </Link>
-            </motion.p>
-          </div>
+          </ImageClipReveal>
         </div>
+      </section>
 
-        {/* System Requirements */}
-        <div className="bg-[var(--color-primary-light)] border-t border-[var(--color-primary-light)]/50 p-6">
-          <h3 className="font-semibold mb-3 text-[var(--color-primary-dark)]">
-            System Requirements
-          </h3>
-          <AnimatePresence mode="wait">
-            <motion.ul
-              key={activeOs}
-              className="text-sm text-[var(--color-gray-600)] space-y-1.5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {systemRequirements[activeOs].map((requirement, index) => (
-                <motion.li
-                  key={index}
-                  className="flex items-start"
-                  variants={listItemVariants}
-                  initial="hidden"
-                  animate="visible"
-                  custom={index}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <svg
-                    className="w-4 h-4 text-[var(--color-primary)] mr-2 mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  {requirement}
-                </motion.li>
+      {/* ── Section 5: Installation Instructions ── */}
+      <section className="bg-[var(--color-bg-light)] pb-20">
+        <div className="container mx-auto px-4">
+          <div data-animate="section" className="max-w-2xl mx-auto">
+            <h3 className="text-xl font-semibold mb-6 text-[var(--color-text-on-light)]">
+              Installation Instructions
+            </h3>
+            <ol ref={installRef} className="space-y-4">
+              {installInstructions[activeOs].map((instruction, index) => (
+                <li key={index} className="flex items-start">
+                  <span className="bg-[var(--color-accent)] text-white w-8 h-8 rounded-full flex items-center justify-center font-semibold mr-4 flex-shrink-0 text-sm">
+                    {index + 1}
+                  </span>
+                  <span className="text-[var(--color-text-on-light-secondary)] pt-1 leading-relaxed">
+                    {instruction}
+                  </span>
+                </li>
               ))}
-            </motion.ul>
-          </AnimatePresence>
+            </ol>
+
+            <p
+              data-animate="section"
+              className="mt-8 text-[var(--color-text-on-light-secondary)]"
+            >
+              Need help with installation?{" "}
+              <Link
+                href="/contact"
+                className="text-[var(--color-accent)] hover:underline"
+              >
+                Contact our support team
+              </Link>{" "}
+              for assistance.
+            </p>
+          </div>
         </div>
-      </motion.div>
-
-      {/* Installation Instructions */}
-      <motion.div className="max-w-2xl mx-auto mt-10" variants={itemVariants}>
-        <h3 className="text-xl font-semibold mb-4 text-[var(--color-primary-dark)]">
-          Installation Instructions
-        </h3>
-        <AnimatePresence mode="wait">
-          <motion.ol
-            key={activeOs}
-            className="space-y-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.li
-              className="flex"
-              variants={listItemVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.1 }}
-            >
-              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
-                1
-              </span>
-              <span className="text-[var(--color-gray-600)]">
-                {activeOs === "windows" &&
-                  "Download the APOS installer (.exe) file from the button above."}
-                {activeOs === "mac" &&
-                  "Download the APOS disk image (.dmg) file from the button above."}
-                {activeOs === "linux" &&
-                  "Download the APOS AppImage file from the button above."}
-              </span>
-            </motion.li>
-            <motion.li
-              className="flex"
-              variants={listItemVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.2 }}
-            >
-              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
-                2
-              </span>
-              <span className="text-[var(--color-gray-600)]">
-                {activeOs === "windows" &&
-                  "Double-click the downloaded file to start the installation wizard."}
-                {activeOs === "mac" &&
-                  "Double-click the downloaded .dmg file to open it."}
-                {activeOs === "linux" &&
-                  "Make the AppImage executable by right-clicking it, selecting Properties, and enabling 'Allow executing file as program' in the Permissions tab."}
-              </span>
-            </motion.li>
-            <motion.li
-              className="flex"
-              variants={listItemVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.3 }}
-            >
-              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
-                3
-              </span>
-              <span className="text-[var(--color-gray-600)]">
-                {activeOs === "windows" &&
-                  "Follow the on-screen instructions to complete the installation."}
-                {activeOs === "mac" &&
-                  "Drag the APOS Solutions icon to the Applications folder."}
-                {activeOs === "linux" &&
-                  "Double-click the AppImage to run the application."}
-              </span>
-            </motion.li>
-            <motion.li
-              className="flex"
-              variants={listItemVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.4 }}
-            >
-              <span className="bg-[var(--color-primary-light)] text-[var(--color-primary)] w-6 h-6 rounded-full flex items-center justify-center font-semibold mr-3 flex-shrink-0">
-                4
-              </span>
-              <span className="text-[var(--color-gray-600)]">
-                Launch APOS Solutions from your desktop shortcut or applications
-                folder and begin setup.
-              </span>
-            </motion.li>
-          </motion.ol>
-        </AnimatePresence>
-
-        <motion.p
-          className="mt-6 text-[var(--color-gray-600)]"
-          variants={itemVariants}
-        >
-          Need help with installation?{" "}
-          <Link
-            href="/contact"
-            className="text-[var(--color-primary)] hover:underline"
-          >
-            Contact our support team
-          </Link>{" "}
-          for assistance.
-        </motion.p>
-      </motion.div>
-    </motion.div>
+      </section>
+    </div>
   );
 }
