@@ -16,8 +16,8 @@ import ScatteredText from "@/components/ui/ScatteredText";
 import TextLineReveal from "@/components/ui/TextLineReveal";
 import InfiniteTextTicker from "@/components/ui/InfiniteTextTicker";
 import ParallaxHeroSection from "@/components/ui/ParallaxHeroSection";
-import AnimatedProductShowcase from "@/components/ui/AnimatedProductShowcase";
-import ScrollReveal3DGallery from "@/components/ui/ScrollReveal3DGallery";
+import ParallaxSlideShowcase from "@/components/ui/ParallaxSlideShowcase";
+import PinnedScrollSection from "@/components/ui/PinnedScrollSection";
 import StaggeredBlindsReveal from "@/components/ui/StaggeredBlindsReveal";
 import TestimonialCardFan from "@/components/ui/TestimonialCardFan";
 import SpotlightReveal from "@/components/ui/SpotlightReveal";
@@ -68,7 +68,7 @@ const showcaseFeatures = [
     icon: FiCoffee,
     title: "Intuitive Order Taking",
     description: "Speed up service with our easy-to-use interface, minimizing errors and improving staff efficiency across every shift.",
-    gradient: "linear-gradient(135deg, #1e3a5f, #0f2744)",
+    gradient: "linear-gradient(135deg, #2563eb 0%, #1e40af 40%, #0f2744 100%)",
     label: "Orders",
     num: "01",
   },
@@ -77,7 +77,7 @@ const showcaseFeatures = [
     icon: FiGrid,
     title: "Seamless Table Management",
     description: "Visually manage your floor plan, track table status, and optimize seating to maximize turns during peak hours.",
-    gradient: "linear-gradient(135deg, #1a3d2e, #0d2618)",
+    gradient: "linear-gradient(135deg, #10b981 0%, #047857 40%, #0d2618 100%)",
     label: "Tables",
     num: "02",
   },
@@ -86,7 +86,7 @@ const showcaseFeatures = [
     icon: FiPieChart,
     title: "Insightful Reporting",
     description: "Gain valuable insights into your sales, top items, and staff performance with comprehensive real-time dashboards.",
-    gradient: "linear-gradient(135deg, #3b1f5e, #1e1035)",
+    gradient: "linear-gradient(135deg, #a855f7 0%, #7c3aed 40%, #1e1035 100%)",
     label: "Reports",
     num: "03",
   },
@@ -95,7 +95,7 @@ const showcaseFeatures = [
     icon: FiClock,
     title: "Kitchen Display Integration",
     description: "Streamline front-of-house and kitchen communication for faster, more accurate order fulfillment every time.",
-    gradient: "linear-gradient(135deg, #5e3b1f, #352010)",
+    gradient: "linear-gradient(135deg, #fb923c 0%, #d97706 40%, #352010 100%)",
     label: "Kitchen",
     num: "04",
   },
@@ -104,7 +104,7 @@ const showcaseFeatures = [
     icon: FiCreditCard,
     title: "Flexible Payments",
     description: "Accept all payment types including credit cards, mobile payments, and gift cards with ease and security.",
-    gradient: "linear-gradient(135deg, #1e4d5e, #0d2a35)",
+    gradient: "linear-gradient(135deg, #06b6d4 0%, #0891b2 40%, #0d2a35 100%)",
     label: "Payments",
     num: "05",
   },
@@ -113,48 +113,54 @@ const showcaseFeatures = [
     icon: FiCloud,
     title: "Cloud-Based Management",
     description: "Access your data anywhere. Make menu changes, view reports, and monitor performance remotely from any device.",
-    gradient: "linear-gradient(135deg, #4a1e5e, #2a0d35)",
+    gradient: "linear-gradient(135deg, #d946ef 0%, #a21caf 40%, #2a0d35 100%)",
     label: "Cloud",
     num: "06",
   },
 ];
 
-/* ───────── 3D Gallery items for Showcase section (mock visuals) ───────── */
-const galleryItems = [
+/* ───────── Pinned scroll steps for "See It in Action" section ───────── */
+const pinnedSteps = [
   {
     id: 1,
-    title: "Lightning-Fast Processing",
+    title: "Lightning-Fast Order Processing",
     subtitle: "Performance",
+    description: "Every millisecond counts during rush hour. APOS processes orders instantly, keeping your queue moving and your customers happy with zero lag.",
     gradient: "linear-gradient(135deg, #0f2744, #1e3a5f, #2563eb)",
   },
   {
     id: 2,
-    title: "Multi-Location Scaling",
+    title: "Scale Across Multiple Locations",
     subtitle: "Growth",
+    description: "Expand effortlessly. Manage menus, staff, and reporting across all your locations from a single centralized dashboard — no matter where you are.",
     gradient: "linear-gradient(135deg, #0d2618, #1a3d2e, #10b981)",
   },
   {
     id: 3,
-    title: "Custom Workflows",
+    title: "Fully Customizable Workflows",
     subtitle: "Flexibility",
+    description: "No two restaurants are the same. Tailor order flows, floor plans, and receipt formats to match your unique operations and service style.",
     gradient: "linear-gradient(135deg, #1e1035, #3b1f5e, #a855f7)",
   },
   {
     id: 4,
     title: "Smart Inventory Tracking",
     subtitle: "Automation",
+    description: "Automatically track stock levels as orders are placed. Get low-stock alerts and reduce waste with real-time inventory intelligence.",
     gradient: "linear-gradient(135deg, #352010, #5e3b1f, #fb923c)",
   },
   {
     id: 5,
-    title: "Real-Time Analytics",
+    title: "Real-Time Analytics Dashboard",
     subtitle: "Insights",
+    description: "Make data-driven decisions with live sales reports, peak-hour analysis, and staff performance metrics — all visualized in one place.",
     gradient: "linear-gradient(135deg, #0d2a35, #1e4d5e, #06b6d4)",
   },
   {
     id: 6,
-    title: "Secure Cloud Backup",
+    title: "Secure Cloud Backup & Sync",
     subtitle: "Security",
+    description: "Your data is always safe. Continuous cloud backups ensure you never lose a transaction, and syncing keeps every device up to date instantly.",
     gradient: "linear-gradient(135deg, #2a0d35, #4a1e5e, #d946ef)",
   },
 ];
@@ -198,7 +204,7 @@ export default function Home() {
   useGSAP(() => {
     if (!heroRef.current) return;
     const tl = gsap.timeline({ delay: 1.2 });
-    tl.from(".hero-cta", { opacity: 0, y: 20, stagger: 0.1, duration: 0.5, ease: "power3.out" })
+    tl.fromTo(".hero-cta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: "power3.out" })
       .from(".hero-scroll", { opacity: 0, y: -10, duration: 0.5 }, "-=0.2");
   }, { scope: heroRef });
 
@@ -237,13 +243,13 @@ export default function Home() {
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Link
                   href="/solutions"
-                  className="hero-cta inline-flex items-center px-8 py-4 rounded-full bg-[var(--color-accent)] text-white font-semibold text-sm hover:bg-[var(--color-accent-dark)] transition-all duration-300 hover:shadow-[0_0_30px_var(--color-accent-glow)]"
+                  className="hero-cta opacity-0 inline-flex items-center px-8 py-4 rounded-full bg-[var(--color-accent)] text-white font-semibold text-sm hover:bg-[var(--color-accent-dark)] transition-all duration-300 hover:shadow-[0_0_30px_var(--color-accent-glow)]"
                 >
                   Explore Features
                 </Link>
                 <Link
                   href="/download"
-                  className="hero-cta inline-flex items-center px-8 py-4 rounded-full border border-[var(--color-border-dark)] text-white font-semibold text-sm hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-300"
+                  className="hero-cta opacity-0 inline-flex items-center px-8 py-4 rounded-full border border-[var(--color-border-dark)] text-white font-semibold text-sm hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors duration-300"
                 >
                   Download Now
                 </Link>
@@ -283,35 +289,18 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          FEATURES — Animated Fruity Product Showcase
-          Wave-stagger entrance, ripple effects, hover interactions
+          FEATURES — Smooth Parallax Scroll Layout (Duda-style)
+          Full-height slides, 50/50 split, parallax visuals
           ═══════════════════════════════════════════════════════════ */}
-      <section className="bg-[var(--color-bg-light)] py-24 md:py-32">
-        <div className="container mx-auto px-6">
-          <div className="mb-16 text-center">
-            <ScatteredText
-              text="Everything Your Business Needs"
-              tag="h2"
-              className="text-3xl md:text-5xl font-bold tracking-tight text-[var(--color-text-on-light)]"
-            />
-            <div className="mt-4">
-              <TextLineReveal tag="p" className="text-[var(--color-text-on-light-secondary)] max-w-2xl mx-auto text-lg">
-                Powerful features designed for the modern restaurant experience.
-              </TextLineReveal>
-            </div>
-          </div>
-
-          <AnimatedProductShowcase items={showcaseFeatures} />
-        </div>
-      </section>
+      <ParallaxSlideShowcase features={showcaseFeatures} />
 
       {/* ═══════════════════════════════════════════════════════════
-          SHOWCASE — Smooth 3D Scroll-Driven Reveal Gallery
-          Cards flip into view with randomized 3D rotation on scroll
+          SHOWCASE — Pinned Scroll Section
+          Left panel stays pinned while steps scroll on the right
           ═══════════════════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 bg-[var(--color-bg-dark)]">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
+      <section className="bg-[var(--color-bg-dark)]">
+        <div className="container mx-auto px-6 pt-24 md:pt-32 pb-12">
+          <div className="text-center">
             <ScatteredText
               text="See It in Action"
               tag="h2"
@@ -319,13 +308,13 @@ export default function Home() {
             />
             <div className="mt-4">
               <TextLineReveal tag="p" className="text-[var(--color-text-on-dark-secondary)] max-w-2xl mx-auto text-lg">
-                Explore the tools that power hundreds of successful businesses worldwide.
+                Scroll through the key capabilities that power hundreds of successful businesses.
               </TextLineReveal>
             </div>
           </div>
-
-          <ScrollReveal3DGallery items={galleryItems} />
         </div>
+
+        <PinnedScrollSection steps={pinnedSteps} />
       </section>
 
       {/* ═══════════════════════════════════════════════════════════

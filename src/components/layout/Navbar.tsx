@@ -120,16 +120,17 @@ const Navbar: React.FC = () => {
     >
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href="/" className="flex flex-col items-start group">
           <Image
             src="/images/APOS_Logo_4f.png"
             alt="APOS"
-            width={36}
-            height={36}
-            className="transition-transform duration-300 group-hover:scale-110"
+            width={140}
+            height={42}
+            className="transition-transform duration-300 group-hover:scale-105 [clip-path:inset(0_0_35%_0)]"
+            style={{ marginBottom: "-1.2rem" }}
           />
-          <span className="font-bold text-xl text-white tracking-tight">
-            APOS
+          <span className="text-[0.55rem] uppercase tracking-[0.28em] text-white/50 ml-[0.15rem]">
+            Point of Sale
           </span>
         </Link>
 
