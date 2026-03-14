@@ -6,20 +6,13 @@ import { gsap } from "@/lib/gsap";
 import ScatteredText from "@/components/ui/ScatteredText";
 import TextLineReveal from "@/components/ui/TextLineReveal";
 import MouseFollowImage from "@/components/ui/MouseFollowImage";
-import StackingCards from "@/components/ui/StackingCards";
-import ImageClipReveal from "@/components/ui/ImageClipReveal";
+import SplitScreenMaskReveal from "@/components/ui/SplitScreenMaskReveal";
+import StaggeredBlindsReveal from "@/components/ui/StaggeredBlindsReveal";
 import SpotlightReveal from "@/components/ui/SpotlightReveal";
 
 /* ───────── Solution data ───────── */
 
-interface SolutionSection {
-  title: string;
-  description: string;
-  features: string[];
-  label: string;
-}
-
-const sections: SolutionSection[] = [
+const sections = [
   {
     title: "Intuitive Workflow & Service Management",
     description:
@@ -33,6 +26,7 @@ const sections: SolutionSection[] = [
       "Lifecycle management",
     ],
     label: "Order Management",
+    gradient: "linear-gradient(135deg, #0f2744, #1e3a5f, #2563eb)",
   },
   {
     title: "Dynamic Resource & Asset Coordination",
@@ -47,6 +41,7 @@ const sections: SolutionSection[] = [
       "Conflict management",
     ],
     label: "Resource Planning",
+    gradient: "linear-gradient(135deg, #0d2618, #1a3d2e, #10b981)",
   },
   {
     title: "Real-time Reporting & Analytics",
@@ -61,6 +56,7 @@ const sections: SolutionSection[] = [
       "Trend visualization",
     ],
     label: "Analytics Dashboard",
+    gradient: "linear-gradient(135deg, #1e1035, #3b1f5e, #a855f7)",
   },
   {
     title: "Team & Workflow Synchronization",
@@ -75,6 +71,7 @@ const sections: SolutionSection[] = [
       "Multi-stage projects",
     ],
     label: "Team Sync",
+    gradient: "linear-gradient(135deg, #352010, #5e3b1f, #fb923c)",
   },
 ];
 
@@ -83,27 +80,9 @@ const sections: SolutionSection[] = [
 export default function SolutionsPage() {
   const pageRef = useRef<HTMLDivElement>(null);
 
-  /* Stagger-in for feature pills inside each stacking card */
   useGSAP(
     () => {
       if (!pageRef.current) return;
-
-      sections.forEach((_, index) => {
-        const pills = `.solution-pills-${index} .pill-chip`;
-
-        gsap.from(pills, {
-          opacity: 0,
-          scale: 0.8,
-          duration: 0.4,
-          stagger: 0.06,
-          ease: "back.out(2)",
-          scrollTrigger: {
-            trigger: `.solution-card-${index}`,
-            start: "top 75%",
-            once: true,
-          },
-        });
-      });
 
       /* CTA buttons fade-in */
       gsap.from(".cta-btn", {
@@ -126,80 +105,6 @@ export default function SolutionsPage() {
   const navigatorItems = sections.map((s) => ({
     text: s.title,
     subtitle: s.label,
-  }));
-
-  /* ── Build StackingCards content ── */
-  const stackCards = sections.map((section, index) => ({
-    key: section.label,
-    content: (
-      <div
-        className={`solution-card-${index} card-light rounded-2xl border border-[var(--color-border-light)] p-8 md:p-12`}
-      >
-        <div className="flex flex-col md:flex-row items-start gap-10">
-          {/* Visual placeholder with clip reveal */}
-          <div className="w-full md:w-[45%] flex-shrink-0">
-            <ImageClipReveal
-              direction={index % 2 === 0 ? "left" : "right"}
-              className="rounded-xl"
-            >
-              <div className="h-64 md:h-80 bg-gradient-to-br from-[var(--color-accent)]/10 to-[var(--color-bg-light)] flex items-center justify-center rounded-xl border border-[var(--color-border-light)]">
-                <span
-                  className="text-7xl font-bold text-[var(--color-accent)]/20"
-                  style={{ fontFamily: "var(--font-playfair, serif)" }}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
-            </ImageClipReveal>
-          </div>
-
-          {/* Text content */}
-          <div className="w-full md:w-[55%]">
-            <span className="text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] font-medium mb-3 block">
-              {section.label}
-            </span>
-            <h3
-              className="text-2xl md:text-3xl font-bold mb-4 text-[var(--color-text-on-light)]"
-              style={{ fontFamily: "var(--font-playfair, serif)" }}
-            >
-              {section.title}
-            </h3>
-            <p className="text-base md:text-lg text-[var(--color-text-on-light-secondary)] mb-8 leading-relaxed">
-              {section.description}
-            </p>
-
-            {/* Feature pills */}
-            <div className={`solution-pills-${index} flex flex-wrap gap-2.5`}>
-              {section.features.map((feature, fIndex) => (
-                <span
-                  key={fIndex}
-                  className="pill-chip inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
-                    border border-[var(--color-border-light)] text-[var(--color-text-on-light-secondary)]
-                    transition-all duration-200
-                    hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)]"
-                >
-                  <svg
-                    className="w-3.5 h-3.5 text-[var(--color-accent)] flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  {feature}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
   }));
 
   return (
@@ -244,30 +149,64 @@ export default function SolutionsPage() {
         </div>
       </section>
 
-      {/* ═════ 3. SOLUTION DETAILS — Light, stacking cards ═════ */}
-      <section className="bg-[var(--color-bg-light)] py-24 md:py-32">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
+      {/* ═══════════════════════════════════════════════════════════
+          3. SOLUTION DETAILS — Pinned Split Screen Mask Reveal
+          Left = text info, Right = image revealed with clipPath mask
+          Scrolls through each solution while pinned on desktop
+          ═══════════════════════════════════════════════════════════ */}
+      <section className="bg-[var(--color-bg-light)]">
+        <div className="py-16 md:py-0">
+          <div className="container mx-auto px-6 py-16 md:hidden">
             <ScatteredText
               text="Deep Dive into Each Solution"
               tag="h2"
-              className="text-3xl md:text-5xl font-bold tracking-tight text-[var(--color-text-on-light)]"
+              className="text-3xl font-bold tracking-tight text-[var(--color-text-on-light)] text-center"
             />
-            <div className="mt-4">
-              <TextLineReveal
-                tag="p"
-                className="text-[var(--color-text-on-light-secondary)] max-w-2xl mx-auto text-lg"
-              >
-                Explore the tools and capabilities that set APOS apart.
-              </TextLineReveal>
-            </div>
           </div>
 
-          <StackingCards cards={stackCards} />
+          <SplitScreenMaskReveal items={sections} />
         </div>
       </section>
 
-      {/* ═════ 4. CTA — Dark, spotlight ═════ */}
+      {/* ═══════════════════════════════════════════════════════════
+          4. FEATURE HIGHLIGHTS — Staggered Blinds Reveal
+          Blinds slide away to reveal key statistics
+          ═══════════════════════════════════════════════════════════ */}
+      <section className="bg-[var(--color-bg-dark)] py-24 md:py-32">
+        <StaggeredBlindsReveal
+          blindCount={6}
+          direction="vertical"
+          staggerFrom="edges"
+          color="var(--color-bg-dark-secondary)"
+        >
+          <div className="container mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {[
+                { number: "4", label: "Core Modules", desc: "Comprehensive solution covering every aspect of your business operations" },
+                { number: "24+", label: "Key Features", desc: "From smart search to automated compliance, every tool you need" },
+                { number: "100%", label: "Customizable", desc: "Tailored workflows and interfaces that adapt to your unique business" },
+              ].map((stat, i) => (
+                <div key={i} className="text-center">
+                  <span
+                    className="text-6xl md:text-7xl font-bold text-[var(--color-accent)] text-glow block mb-4"
+                    style={{ fontFamily: "var(--font-playfair, serif)" }}
+                  >
+                    {stat.number}
+                  </span>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {stat.label}
+                  </h3>
+                  <p className="text-sm text-[var(--color-text-on-dark-secondary)] max-w-xs mx-auto leading-relaxed">
+                    {stat.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </StaggeredBlindsReveal>
+      </section>
+
+      {/* ═════ 5. CTA — Dark, spotlight ═════ */}
       <section className="solutions-cta bg-[var(--color-bg-dark)] py-24 md:py-32">
         <div className="container mx-auto px-6">
           <SpotlightReveal
