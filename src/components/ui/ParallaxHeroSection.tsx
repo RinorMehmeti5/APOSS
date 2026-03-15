@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap";
 interface ParallaxLayer {
   src?: string;
   gradient?: string;
+  content?: React.ReactNode;
   speed: number; // -1 to 1, negative = moves opposite
   className?: string;
   label?: string;
@@ -80,7 +81,9 @@ export default function ParallaxHeroSection({
           className={`parallax-layer absolute pointer-events-none ${layer.className || ""}`}
           data-speed={layer.speed}
         >
-          {layer.src ? (
+          {layer.content ? (
+            layer.content
+          ) : layer.src ? (
             <img
               src={layer.src}
               alt={layer.label || ""}

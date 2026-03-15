@@ -23,30 +23,113 @@ import TestimonialCardFan from "@/components/ui/TestimonialCardFan";
 import SpotlightReveal from "@/components/ui/SpotlightReveal";
 import { useCountUp } from "@/hooks/useGSAPAnimations";
 
+/* ───────── Mini mock UI cards for hero parallax ───────── */
+const HeroDashboardCard = () => (
+  <div className="w-full h-full rounded-2xl bg-[#0d1526] border border-white/[0.08] overflow-hidden shadow-2xl">
+    <div className="px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+      <span className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Dashboard</span>
+      <div className="flex gap-1"><div className="w-1.5 h-1.5 rounded-full bg-green-400"/><div className="w-1.5 h-1.5 rounded-full bg-white/20"/></div>
+    </div>
+    <div className="p-3 space-y-2">
+      <div className="flex items-end gap-1 h-16">
+        {[40,65,45,80,60,90,70,55,85,75].map((h, i) => (
+          <div key={i} className="flex-1 rounded-sm bg-blue-500/60" style={{ height: `${h}%` }} />
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <div><div className="text-[10px] text-white/40">Revenue</div><div className="text-[13px] font-bold text-white">$12,840</div></div>
+        <div><div className="text-[10px] text-white/40">Orders</div><div className="text-[13px] font-bold text-green-400">+24%</div></div>
+      </div>
+    </div>
+  </div>
+);
+
+const HeroAnalyticsCard = () => (
+  <div className="w-full h-full rounded-2xl bg-[#0d1526] border border-white/[0.08] overflow-hidden shadow-2xl">
+    <div className="px-4 py-2.5 border-b border-white/[0.06]">
+      <span className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Analytics</span>
+    </div>
+    <div className="p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <div className="w-14 h-14 rounded-full border-[3px] border-emerald-400 border-r-transparent flex items-center justify-center">
+          <span className="text-[11px] font-bold text-emerald-400">87%</span>
+        </div>
+        <div className="flex-1 space-y-1.5">
+          <div className="flex justify-between text-[9px]"><span className="text-white/50">Dine-in</span><span className="text-white/70">52%</span></div>
+          <div className="h-1 rounded-full bg-white/10"><div className="h-full rounded-full bg-blue-400" style={{ width: "52%" }}/></div>
+          <div className="flex justify-between text-[9px]"><span className="text-white/50">Takeout</span><span className="text-white/70">35%</span></div>
+          <div className="h-1 rounded-full bg-white/10"><div className="h-full rounded-full bg-purple-400" style={{ width: "35%" }}/></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const HeroOrdersCard = () => (
+  <div className="w-full h-full rounded-2xl bg-[#0d1526] border border-white/[0.08] overflow-hidden shadow-2xl">
+    <div className="px-4 py-2.5 border-b border-white/[0.06] flex items-center justify-between">
+      <span className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Orders</span>
+      <span className="text-[9px] text-green-400 font-medium">3 active</span>
+    </div>
+    <div className="p-2 space-y-1.5">
+      {[
+        { id: "#1042", status: "Preparing", color: "bg-amber-500", price: "$14.50" },
+        { id: "#1043", status: "Ready", color: "bg-green-500", price: "$18.90" },
+        { id: "#1044", status: "New", color: "bg-blue-500", price: "$27.00" },
+      ].map((o) => (
+        <div key={o.id} className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-white/[0.03]">
+          <span className="text-[10px] font-mono text-white/70">{o.id}</span>
+          <span className={`text-[8px] px-1.5 py-0.5 rounded-full text-white ${o.color}`}>{o.status}</span>
+          <span className="text-[10px] text-white/60">{o.price}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const HeroReportsCard = () => (
+  <div className="w-full h-full rounded-2xl bg-[#0d1526] border border-white/[0.08] overflow-hidden shadow-2xl">
+    <div className="px-4 py-2.5 border-b border-white/[0.06]">
+      <span className="text-[10px] font-semibold text-white/70 uppercase tracking-wider">Reports</span>
+    </div>
+    <div className="p-3 space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-white/[0.04] rounded-lg p-2"><div className="text-[9px] text-white/40">Today</div><div className="text-[12px] font-bold text-white">$2,340</div></div>
+        <div className="bg-white/[0.04] rounded-lg p-2"><div className="text-[9px] text-white/40">Avg Order</div><div className="text-[12px] font-bold text-white">$26.90</div></div>
+      </div>
+      <div className="flex items-end gap-[3px] h-8">
+        {[30,50,40,70,55,80,65,45,75,60,85,70].map((h, i) => (
+          <div key={i} className="flex-1 rounded-sm" style={{ height: `${h}%`, background: i >= 8 ? "rgba(251,146,60,0.7)" : "rgba(251,146,60,0.3)" }} />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 /* ───────── Parallax Hero Layers (mock floating visuals) ───────── */
 const heroLayers = [
   {
-    gradient: "linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.03))",
+    content: <HeroDashboardCard />,
     speed: 0.3,
-    className: "top-[10%] left-[5%] w-[280px] h-[180px] rounded-2xl opacity-60",
+    className: "top-[22%] left-[5%] w-[260px] h-[180px] rounded-2xl opacity-80",
     label: "Dashboard",
   },
   {
-    gradient: "linear-gradient(135deg, rgba(16,185,129,0.10), rgba(16,185,129,0.03))",
+    content: <HeroAnalyticsCard />,
     speed: -0.4,
-    className: "top-[15%] right-[8%] w-[220px] h-[160px] rounded-2xl opacity-50",
+    className: "top-[15%] right-[8%] w-[220px] h-[150px] rounded-2xl opacity-70",
     label: "Analytics",
   },
   {
-    gradient: "linear-gradient(135deg, rgba(168,85,247,0.10), rgba(168,85,247,0.03))",
+    content: <HeroOrdersCard />,
     speed: 0.6,
-    className: "bottom-[20%] left-[10%] w-[200px] h-[140px] rounded-2xl opacity-40",
+    className: "bottom-[20%] left-[10%] w-[200px] h-[155px] rounded-2xl opacity-65",
     label: "Orders",
   },
   {
-    gradient: "linear-gradient(135deg, rgba(251,146,60,0.10), rgba(251,146,60,0.03))",
+    content: <HeroReportsCard />,
     speed: -0.2,
-    className: "bottom-[25%] right-[12%] w-[240px] h-[170px] rounded-2xl opacity-45",
+    className: "bottom-[25%] right-[12%] w-[230px] h-[165px] rounded-2xl opacity-70",
     label: "Reports",
   },
   {
@@ -200,13 +283,56 @@ function StatCounter({ target, suffix, label, decimals }: { target: number; suff
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
 
-  // Hero CTA + scroll indicator animation
+  const heroHeadingRef = useRef<HTMLHeadingElement>(null);
+  const partnersRef = useRef<HTMLElement>(null);
+
+  // Hero heading scattered animation + CTA
   useGSAP(() => {
     if (!heroRef.current) return;
+
+    // Scattered text animation for heading
+    if (heroHeadingRef.current) {
+      import("split-type").then(({ default: SplitType }) => {
+        const split = new SplitType(heroHeadingRef.current!, { types: "chars" });
+        if (!split.chars || split.chars.length === 0) return;
+
+        split.chars.forEach((char) => {
+          gsap.set(char, {
+            x: gsap.utils.random(-300, 300),
+            y: gsap.utils.random(-200, 200),
+            rotation: gsap.utils.random(-180, 180),
+            opacity: 0,
+            scale: gsap.utils.random(0.3, 1.8),
+            willChange: "transform, opacity",
+          });
+        });
+
+        gsap.to(split.chars, {
+          x: 0, y: 0, rotation: 0, opacity: 1, scale: 1,
+          duration: 1.4, stagger: 0.015, delay: 0.3, ease: "power4.out",
+        });
+      });
+    }
+
     const tl = gsap.timeline({ delay: 1.2 });
-    tl.fromTo(".hero-cta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: "power3.out" })
-      .from(".hero-scroll", { opacity: 0, y: -10, duration: 0.5 }, "-=0.2");
+    tl.fromTo(".hero-cta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: "power3.out" });
   }, { scope: heroRef });
+
+  // Partners entrance animation
+  useGSAP(() => {
+    if (!partnersRef.current) return;
+    gsap.from(partnersRef.current.querySelectorAll(".partner-item"), {
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: partnersRef.current,
+        start: "top 85%",
+      },
+    });
+  }, { scope: partnersRef });
 
   return (
     <>
@@ -222,13 +348,13 @@ export default function Home() {
                 All-Round Progressive Optimized Simple
               </p>
 
-              <ScatteredText
-                text="The Future of POS Management"
-                tag="h1"
-                className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.02] tracking-tight max-w-5xl mx-auto text-white"
-                scrub={false}
-                delay={0.3}
-              />
+              <h1
+                ref={heroHeadingRef}
+                className="split-parent text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.02] tracking-tight max-w-5xl mx-auto text-white"
+              >
+                The Future of <span className="text-[var(--color-accent)]">POS</span>{" "}
+                <span className="whitespace-nowrap">Management</span>
+              </h1>
 
               <div className="mt-8 max-w-xl mx-auto">
                 <TextLineReveal
@@ -255,11 +381,6 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Scroll indicator */}
-              <div className="hero-scroll mt-20 flex flex-col items-center gap-2">
-                <span className="text-xs uppercase tracking-widest text-[var(--color-text-on-dark-muted)]">Scroll</span>
-                <div className="w-px h-8 bg-gradient-to-b from-[var(--color-text-on-dark-muted)] to-transparent" />
-              </div>
             </div>
           </div>
 
@@ -267,7 +388,7 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 right-0 z-20">
             <InfiniteTextTicker
               text="ORDER · MANAGE · ANALYZE · GROW"
-              className="text-6xl md:text-8xl font-bold text-outline text-white/10 py-4"
+              className="text-6xl md:text-8xl font-bold text-outline text-white/60 py-4"
               speed={40}
             />
           </div>
@@ -275,14 +396,15 @@ export default function Home() {
       </section>
 
       {/* ═════ PARTNERS — Dark, seamless with hero ═════ */}
-      <section className="py-12 bg-[var(--color-bg-dark)]">
-        <div className="flex items-center justify-center gap-16 md:gap-24 flex-wrap px-6">
+      <section ref={partnersRef} className="py-16 bg-[var(--color-bg-dark)]">
+        <p className="text-center text-xs uppercase tracking-[0.3em] text-white/30 mb-10">Trusted Partners</p>
+        <div className="flex items-center justify-center gap-20 md:gap-32 flex-wrap px-6">
           {partners.map((partner) => (
-            <div key={partner.name} className="flex flex-col items-center gap-2">
-              <div className="h-10 flex items-center grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                <Image src={partner.src} alt={partner.name} width={100} height={50} className="object-contain" />
+            <div key={partner.name} className="partner-item flex flex-col items-center gap-3 group">
+              <div className="h-14 flex items-center brightness-0 invert opacity-70 group-hover:opacity-100 transition-all duration-500">
+                <Image src={partner.src} alt={partner.name} width={140} height={70} className="object-contain" />
               </div>
-              <span className="text-[10px] text-[var(--color-text-on-dark-muted)] uppercase tracking-wider">{partner.label}</span>
+              <span className="text-[11px] text-white/40 uppercase tracking-wider group-hover:text-white/70 transition-colors duration-500">{partner.label}</span>
             </div>
           ))}
         </div>
@@ -328,7 +450,7 @@ export default function Home() {
           blindCount={8}
           direction="horizontal"
           staggerFrom="center"
-          color="var(--color-bg-dark-secondary)"
+          color="#ffffff"
           className="relative z-10"
         >
           <div className="container mx-auto px-6">

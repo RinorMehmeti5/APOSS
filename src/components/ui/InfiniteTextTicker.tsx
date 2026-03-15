@@ -1,7 +1,7 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 
 interface InfiniteTextTickerProps {
   text: string;
@@ -56,20 +56,8 @@ export default function InfiniteTextTicker({
         repeat: -1,
       });
 
-      // Scroll velocity modulation
-      ScrollTrigger.create({
-        onUpdate: (self) => {
-          if (!tweenRef.current) return;
-          const velocity = Math.abs(self.getVelocity());
-          const boost = gsap.utils.clamp(1, 5, 1 + velocity / 2000);
-          gsap.to(tweenRef.current, {
-            timeScale: boost,
-            duration: 0.3,
-            ease: "power2.out",
-            overwrite: true,
-          });
-        },
-      });
+      // Keep constant timeScale
+      tweenRef.current.timeScale(1);
     },
     { scope: containerRef }
   );
